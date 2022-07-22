@@ -191,6 +191,16 @@ export class CategoriesResolver {
 
     const categoryRemoved = await this.categoriesService.remove(categoryId);
 
+    if (!categoryRemoved) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: "Category not found",
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return {
       statusCode: HttpStatus.OK,
       message: "Category removed",

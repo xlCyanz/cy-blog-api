@@ -1,11 +1,7 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Category, CategoryDocument } from "./entities/category.entity";
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from "@nestjs/common";
+import { Injectable, BadRequestException, HttpStatus } from "@nestjs/common";
 
 @Injectable()
 export class CategoriesRepository {
@@ -18,26 +14,25 @@ export class CategoriesRepository {
   }
 
   async findById(categoryId: Types.ObjectId): Promise<Category> {
-    try {
-      return await this.categoryModel.findById(categoryId);
-    } catch (error) {
-      throw new NotFoundException(error);
-    }
+    return await this.categoryModel.findById(categoryId);
   }
 
   async findByName(categoryName: string): Promise<Category> {
-    try {
-      return await this.categoryModel.findOne({ name: categoryName });
-    } catch (error) {
-      throw new NotFoundException(error);
-    }
+    return await this.categoryModel.findOne({ name: categoryName });
   }
 
   async create(newCategory: Category): Promise<Category> {
     try {
       return await this.categoryModel.create(newCategory);
     } catch (error) {
-      throw new BadRequestException(error);
+      if (error.code === 11000) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `Category named ${newCategory.name} already exists`,
+        });
+      } else {
+        throw new BadRequestException(error);
+      }
     }
   }
 
@@ -57,10 +52,6 @@ export class CategoriesRepository {
   }
 
   async remove(categoryId: Types.ObjectId) {
-    try {
-      return await this.categoryModel.findByIdAndDelete(categoryId);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    return await this.categoryModel.findByIdAndDelete(categoryId);
   }
 }

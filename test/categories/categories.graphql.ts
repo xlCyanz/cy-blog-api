@@ -16,8 +16,11 @@ export const GET_ALL_CATEGORIES = `
     ${FRAGMENT_CATEGORY}
     query GET_ALL_CATEGORIES {
         categories {
-            __typename
+          message
+          statusCode
+          data {
             ...Category
+          }
         }
     }
 `;
@@ -26,8 +29,12 @@ export const GET_CATEGORY_BY_ID = `
     ${FRAGMENT_CATEGORY}
     query GET_CATEGORY_BY_ID($id: String!) {
         categoryById(id: $id) {
-            __typename
+          __typename
+          message
+          statusCode
+          data {
             ...Category
+          }
         }
     }
 `;
@@ -36,8 +43,11 @@ export const GET_CATEGORY_BY_NAME = `
     ${FRAGMENT_CATEGORY}
     query GET_CATEGORY_BY_NAME($name: String!) {
         categoryByName(name: $name) {
-            __typename
+          message
+          statusCode
+          data {
             ...Category
+          }
         }
     }
 `;
@@ -47,10 +57,43 @@ export const GET_CATEGORY_BY_NAME = `
  */
 export const CREATE_CATEGORY = `
     ${FRAGMENT_CATEGORY}
-    mutation CREATE_CATEGORY($input: CreateCategoryInput!) {
-        createCategory(input: $input) {
-            __typename
+    mutation CREATE_CATEGORY($name: String!, $description: String) {
+        createCategory(input: { name: $name, description: $description }) {
+          statusCode
+          message
+          data {
             ...Category
+          }
         }
     }
+`;
+
+export const UPDATE_CATEGORY = `
+  ${FRAGMENT_CATEGORY}
+  mutation UPDATE_CATEGORY($id: String!, $name: String, $description: String) {
+    updateCategory(input: {
+      id: $id,
+      name: $name,
+      description: $description
+    }) {
+      statusCode
+      message
+      data {
+        ...Category
+      }
+    }
+  }
+`;
+
+export const REMOVE_CATEGORY = `
+  ${FRAGMENT_CATEGORY}
+  mutation REMOVE_CATEGORY($id: String!) {
+    removeCategory(id: $id) {
+      statusCode
+      message
+      data {
+        ...Category
+      }
+    }
+  }
 `;
