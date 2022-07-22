@@ -17,22 +17,46 @@ describe("Categories (e2e)", () => {
     await app.init();
   });
 
-  it("CREATE CATEGORY", async () => {
-    const server = request(app.getHttpServer());
-
-    const newCategory = await server.post(path).send({
-      query: CREATE_CATEGORY,
-      variables: {
-        input: {
-          name: "Test Category",
-          description: "Test Category Description",
-        },
-      },
-    });
-
-    console.log(
-      "🚀 ~ file: categories.e2e-spec.ts ~ line 33 ~ getAllCategories ~ getAllCategories",
-      newCategory.body,
-    );
+  afterAll(async () => {
+    console.log("Closing server test");
+    await app.close();
   });
+
+  const category = {
+    name: "Test Category 1",
+    description: "Test Category Description",
+  };
+
+  it("Create a category", async () =>
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: CREATE_CATEGORY,
+        variables: {
+          input: {
+            ...category,
+          },
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const { createCategory } = res.body.data;
+
+        expect(createCategory._id).toBeDefined();
+        expect(createCategory.name).toBe(category.name);
+        expect(createCategory.description).toBe(category.description);
+      }));
+
+  it("Create a duplicate category (error)", async () =>
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: CREATE_CATEGORY,
+        variables: {
+          input: {
+            ...category,
+          },
+        },
+      })
+      .expect(200));
 });
