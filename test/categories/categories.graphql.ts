@@ -29,7 +29,6 @@ export const GET_CATEGORY_BY_ID = `
     ${FRAGMENT_CATEGORY}
     query GET_CATEGORY_BY_ID($id: String!) {
         categoryById(id: $id) {
-          __typename
           message
           statusCode
           data {

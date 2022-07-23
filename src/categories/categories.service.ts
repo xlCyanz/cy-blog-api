@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
-import { Injectable } from "@nestjs/common";
 import { CategoriesMapper } from "./categories.mapper";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";
 import { CategoriesRepository } from "./categories.repository";
+import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class CategoriesService {
@@ -12,12 +12,32 @@ export class CategoriesService {
     private categoriesMapper: CategoriesMapper,
   ) {}
 
+  /**
+   * Method to convert a string to ObjectId bson.
+   *
+   * Generate a BadRequestException if string is not a valid ObjectId.
+   *
+   * @param categoryId - The categoryId to check.
+   */
+  private stringToObjectId(categoryId: string) {
+    if (!Types.ObjectId.isValid(categoryId)) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: "Category id is invalid",
+      });
+    }
+
+    return new Types.ObjectId(categoryId);
+  }
+
   findAll() {
     return this.categoriesRepository.findAll();
   }
 
   findById(categoryId: string) {
-    return this.categoriesRepository.findById(new Types.ObjectId(categoryId));
+    return this.categoriesRepository.findById(
+      this.stringToObjectId(categoryId),
+    );
   }
 
   findByName(name: string) {
@@ -32,12 +52,12 @@ export class CategoriesService {
 
   update(categoryId: string, updateCategoryInput: UpdateCategoryInput) {
     return this.categoriesRepository.update(
-      new Types.ObjectId(categoryId),
+      this.stringToObjectId(categoryId),
       this.categoriesMapper.dtoToEntity(updateCategoryInput),
     );
   }
 
   remove(categoryId: string) {
-    return this.categoriesRepository.remove(new Types.ObjectId(categoryId));
+    return this.categoriesRepository.remove(this.stringToObjectId(categoryId));
   }
 }

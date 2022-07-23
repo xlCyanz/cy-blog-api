@@ -23,9 +23,14 @@ export class Category {
   })
   description: string;
 
-  constructor(name: string, description: string) {
-    this.name = name;
-    this.description = description;
+  @Field(() => Date)
+  createdAt?: Date;
+
+  @Field(() => Date)
+  updatedAt?: Date;
+
+  constructor(init?: Partial<Category>) {
+    Object.assign(this, init);
   }
 }
 

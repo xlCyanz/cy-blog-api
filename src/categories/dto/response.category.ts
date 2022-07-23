@@ -4,14 +4,12 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({ description: "Category response" })
 export class ResponseCategory extends BaseResponse {
-  @Field(() => Category, { nullable: true })
+  @Field(() => Category)
   data?: Category;
 
-  constructor(statusCode: number, message: string, data: Category) {
+  constructor(init?: Partial<ResponseCategory>) {
     super();
-    this.statusCode = statusCode;
-    this.message = message;
-    this.data = data;
+    Object.assign(this, init);
   }
 }
 
@@ -20,10 +18,8 @@ export class ResponseCategories extends BaseResponse {
   @Field(() => [Category], { nullable: true })
   data?: Category[];
 
-  constructor(statusCode: number, message: string, data: Category[]) {
+  constructor(init?: Partial<ResponseCategories>) {
     super();
-    this.statusCode = statusCode;
-    this.message = message;
-    this.data = data;
+    Object.assign(this, init);
   }
 }
