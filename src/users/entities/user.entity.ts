@@ -1,3 +1,4 @@
+import * as bcrypt from "bcrypt";
 import { Date, Types } from "mongoose";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
@@ -32,15 +33,11 @@ export class User {
   email: string;
 
   @Field(() => String, { description: "User role" })
-  @Prop({
-    message: "User role is required",
-  })
+  @Prop({ message: "User role is required" })
   role: string;
 
   @Field(() => String, { description: "User avatar" })
-  @Prop({
-    message: "User avatar is required",
-  })
+  @Prop({ message: "User avatar is required" })
   avatar: string;
 
   @Field(() => Date)
@@ -49,6 +46,15 @@ export class User {
   @Field(() => Date)
   updatedAt?: Date;
 
+  async encryptPassword(password: string) {
+    const salt = await bcrypt.genSalt(27);
+    return await bcrypt.hash(password, salt);
+  }
+
+  async comparePassword(password: string) {
+    return await bcrypt.compare(password, this.password);
+  }
+
   constructor(init?: Partial<User>) {
     Object.assign(this, init);
   }
@@ -56,3 +62,10 @@ export class User {
 
 export type UserDocument = Document & User;
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    this.password = await this.encryptPassword(this.password);
+  }
+  next();
+});

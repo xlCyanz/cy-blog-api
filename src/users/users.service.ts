@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import Utils from "../utils";
+import { Injectable } from "@nestjs/common";
+import { UsersMapper } from "./users.mapper";
+import { UsersRepository } from "./users.repository";
+import { CreateUserInput } from "./dto/create-user.input";
+import { UpdateUserInput } from "./dto/update-user.input";
 
 @Injectable()
 export class UsersService {
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private usersMapper: UsersMapper,
+  ) {}
+
+  findById(userId: string) {
+    return this.usersRepository.findById(Utils.stringToObjectId(userId));
+  }
+
+  findByName(name: string) {
+    return this.usersRepository.findByName(name);
+  }
+
+  findByEmail(email: string) {
+    return this.usersRepository.findByEmail(email);
+  }
+
   create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
+    return this.usersRepository.create(
+      this.usersMapper.dtoToEntity(createUserInput),
+    );
   }
 
-  findAll() {
-    return `This action returns all users`;
+  update(updateUserInput: UpdateUserInput) {
+    return this.usersRepository.update(
+      Utils.stringToObjectId(updateUserInput.id),
+      this.usersMapper.dtoToEntity(updateUserInput),
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(userId: string) {
+    return this.usersRepository.remove(Utils.stringToObjectId(userId));
   }
 }
