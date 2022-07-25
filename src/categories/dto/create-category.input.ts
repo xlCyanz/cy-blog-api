@@ -2,10 +2,10 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
 export class CreateCategoryInput {
-  @Field(() => String, { description: "Category name" })
+  @Field(() => String)
   name: string;
 
-  @Field(() => String, { description: "Category description", nullable: true })
+  @Field(() => String, { nullable: true })
   description: string;
 
   constructor(init?: Partial<CreateCategoryInput>) {

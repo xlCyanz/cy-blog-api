@@ -30,9 +30,7 @@ export class CategoriesRepository {
           statusCode: HttpStatus.BAD_REQUEST,
           message: `Category named ${newCategory.name} already exists`,
         });
-      } else {
-        throw new BadRequestException(error);
-      }
+      } else throw new BadRequestException(error);
     }
   }
 
