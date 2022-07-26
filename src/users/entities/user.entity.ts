@@ -46,12 +46,7 @@ export class User {
   @Field(() => Date)
   updatedAt?: Date;
 
-  async encryptPassword(password: string) {
-    const salt = await bcrypt.genSalt(27);
-    return await bcrypt.hash(password, salt);
-  }
-
-  async comparePassword(password: string) {
+  public async comparePassword(password: string) {
     return await bcrypt.compare(password, this.password);
   }
 
@@ -65,7 +60,9 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre("save", async function (next) {
   if (this.isNew) {
-    this.password = await this.encryptPassword(this.password);
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+    this.role = "user";
   }
   next();
 });
