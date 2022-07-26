@@ -65,7 +65,7 @@ export class UsersResolver {
     if (!name) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Name is required",
+        message: "User name is required",
       });
     }
 
@@ -100,7 +100,7 @@ export class UsersResolver {
     if (!email) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Email is required",
+        message: "User email is required",
       });
     }
 
@@ -135,21 +135,21 @@ export class UsersResolver {
     if (!input.name) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Name is required",
+        message: "User name is required",
       });
     }
 
     if (!input.email) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Email is required",
+        message: "User email is required",
       });
     }
 
     if (!input.password) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Password is required",
+        message: "User password is required",
       });
     }
 
