@@ -52,7 +52,12 @@ describe("Users (e2e)", () => {
       .send({
         query: CREATE_USER,
         variables: {
-          ...user,
+          input: {
+            name: user.name,
+            password: user.password,
+            email: user.email,
+            avatar: user.avatar,
+          },
         },
       })
       .expect(200)
@@ -80,7 +85,12 @@ describe("Users (e2e)", () => {
       .send({
         query: CREATE_USER,
         variables: {
-          ...user,
+          input: {
+            name: user.name,
+            password: user.password,
+            email: user.email,
+            avatar: user.avatar,
+          },
         },
       })
       .expect(200)
@@ -105,15 +115,15 @@ describe("Users (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const { userById } = res.body.data;
+        const { user: userById } = res.body.data;
 
-        expect(userById.statusCode).toBe(HttpStatus.OK);
+        expect(userById.statusCode).toBe(HttpStatus.FOUND);
         expect(userById.message).toBe("User found");
         expect(userById.data).toBeDefined();
 
         expect(userById.data._id).toBeDefined();
         expect(userById.data.name).toBe(user.name);
-        expect(userById.data.password).toBe(user.password);
+        expect(userById.data.password).not.toBe(user.password);
         expect(userById.data.email).toBe(user.email);
         expect(userById.data.role).toBeDefined();
         expect(userById.data.role).toBe("user");
@@ -125,7 +135,7 @@ describe("Users (e2e)", () => {
       .send({
         query: GET_USER_BY_ID,
         variables: {
-          _id: "",
+          id: "",
         },
       })
       .expect(200)
@@ -145,7 +155,7 @@ describe("Users (e2e)", () => {
       .send({
         query: GET_USER_BY_ID,
         variables: {
-          _id: `${user._id}${user._id}`,
+          id: `${user._id}${user._id}`,
         },
       })
       .expect(200)
@@ -172,13 +182,13 @@ describe("Users (e2e)", () => {
       .then((res) => {
         const { userByName } = res.body.data;
 
-        expect(userByName.statusCode).toBe(HttpStatus.OK);
+        expect(userByName.statusCode).toBe(HttpStatus.FOUND);
         expect(userByName.message).toBe("User found");
         expect(userByName.data).toBeDefined();
 
         expect(userByName.data._id).toBeDefined();
         expect(userByName.data.name).toBe(user.name);
-        expect(userByName.data.password).toBe(user.password);
+        expect(userByName.data.password).not.toBe(user.password);
         expect(userByName.data.email).toBe(user.email);
         expect(userByName.data.role).toBeDefined();
         expect(userByName.data.role).toBe("user");
@@ -238,13 +248,13 @@ describe("Users (e2e)", () => {
       .then((res) => {
         const { userByEmail } = res.body.data;
 
-        expect(userByEmail.statusCode).toBe(HttpStatus.OK);
+        expect(userByEmail.statusCode).toBe(HttpStatus.FOUND);
         expect(userByEmail.message).toBe("User found");
         expect(userByEmail.data).toBeDefined();
 
         expect(userByEmail.data._id).toBeDefined();
         expect(userByEmail.data.name).toBe(user.name);
-        expect(userByEmail.data.password).toBe(user.password);
+        expect(userByEmail.data.password).not.toBe(user.password);
         expect(userByEmail.data.email).toBe(user.email);
         expect(userByEmail.data.role).toBeDefined();
         expect(userByEmail.data.role).toBe("user");
@@ -293,9 +303,8 @@ describe("Users (e2e)", () => {
 
   it("Update a user", async () => {
     const newUser = {
+      id: user._id,
       name: "Test User 1 Updated!",
-      password: "Test User Password 1 Updated!",
-      email: "Test User Email 1 Updated!",
       avatar: "Test User Avatar 1 Updated!",
     };
 
@@ -304,8 +313,9 @@ describe("Users (e2e)", () => {
       .send({
         query: UPDATE_USER,
         variables: {
-          id: user._id,
-          ...newUser,
+          input: {
+            ...newUser,
+          },
         },
       })
       .expect(200)
@@ -318,8 +328,6 @@ describe("Users (e2e)", () => {
 
         expect(updateUser.data._id).toBeDefined();
         expect(updateUser.data.name).toBe(newUser.name);
-        expect(updateUser.data.password).toBe(newUser.password);
-        expect(updateUser.data.email).toBe(newUser.email);
         expect(updateUser.data.avatar).toBe(newUser.avatar);
       });
   });
@@ -330,7 +338,9 @@ describe("Users (e2e)", () => {
       .send({
         query: UPDATE_USER,
         variables: {
-          id: "",
+          input: {
+            id: "",
+          },
         },
       })
       .expect(200)
@@ -351,15 +361,19 @@ describe("Users (e2e)", () => {
       .send({
         query: UPDATE_USER,
         variables: {
-          id: `${user._id}${user._id}`,
+          input: {
+            id: `${user._id}${user._id}`,
+          },
         },
       })
       .expect(200)
       .then((res) => {
         const error = res.body.errors[0];
 
-        expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("User not found");
+        expect(error.extensions.response.statusCode).toBe(
+          HttpStatus.BAD_REQUEST,
+        );
+        expect(error.message).toBe("User id is invalid");
         expect(res.body.data).toBeNull();
       });
   });
@@ -380,12 +394,6 @@ describe("Users (e2e)", () => {
         expect(removeUser.statusCode).toBe(HttpStatus.OK);
         expect(removeUser.message).toBe("User removed");
         expect(removeUser.data).toBeDefined();
-
-        expect(removeUser.data._id).toBeDefined();
-        expect(removeUser.data.name).toBe(user.name);
-        expect(removeUser.data.password).toBe(user.password);
-        expect(removeUser.data.email).toBe(user.email);
-        expect(removeUser.data.avatar).toBe(user.avatar);
       });
   });
 
@@ -423,8 +431,10 @@ describe("Users (e2e)", () => {
       .then((res) => {
         const error = res.body.errors[0];
 
-        expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("User not found");
+        expect(error.extensions.response.statusCode).toBe(
+          HttpStatus.BAD_REQUEST,
+        );
+        expect(error.message).toBe("User id is invalid");
         expect(res.body.data).toBeNull();
       });
   });
