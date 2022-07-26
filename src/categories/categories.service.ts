@@ -12,13 +12,15 @@ export class CategoriesService {
     private categoriesMapper: CategoriesMapper,
   ) {}
 
+  private exceptionMessageInvalid = "Category id is invalid";
+
   findAll() {
     return this.categoriesRepository.findAll();
   }
 
   findById(categoryId: string) {
     return this.categoriesRepository.findById(
-      Utils.stringToObjectId(categoryId),
+      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
     );
   }
 
@@ -34,12 +36,14 @@ export class CategoriesService {
 
   update(categoryId: string, updateCategoryInput: UpdateCategoryInput) {
     return this.categoriesRepository.update(
-      Utils.stringToObjectId(categoryId),
+      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
       this.categoriesMapper.dtoToEntity(updateCategoryInput),
     );
   }
 
   remove(categoryId: string) {
-    return this.categoriesRepository.remove(Utils.stringToObjectId(categoryId));
+    return this.categoriesRepository.remove(
+      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
+    );
   }
 }

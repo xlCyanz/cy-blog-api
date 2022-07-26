@@ -12,8 +12,12 @@ export class UsersService {
     private usersMapper: UsersMapper,
   ) {}
 
+  private exceptionMessageInvalid = "User id is invalid";
+
   findById(userId: string) {
-    return this.usersRepository.findById(Utils.stringToObjectId(userId));
+    return this.usersRepository.findById(
+      Utils.stringToObjectId(userId, this.exceptionMessageInvalid),
+    );
   }
 
   findByName(name: string) {
@@ -32,12 +36,14 @@ export class UsersService {
 
   update(updateUserInput: UpdateUserInput) {
     return this.usersRepository.update(
-      Utils.stringToObjectId(updateUserInput.id),
+      Utils.stringToObjectId(updateUserInput.id, this.exceptionMessageInvalid),
       this.usersMapper.dtoToEntity(updateUserInput),
     );
   }
 
   remove(userId: string) {
-    return this.usersRepository.remove(Utils.stringToObjectId(userId));
+    return this.usersRepository.remove(
+      Utils.stringToObjectId(userId, this.exceptionMessageInvalid),
+    );
   }
 }
