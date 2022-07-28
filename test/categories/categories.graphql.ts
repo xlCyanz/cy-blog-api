@@ -1,5 +1,5 @@
 /**
- * FRAGMENTS
+ * Fragmentes
  */
 const FRAGMENT_CATEGORY = `
     fragment Category on Category {
@@ -10,7 +10,7 @@ const FRAGMENT_CATEGORY = `
 `;
 
 /**
- * QUERIES
+ * Queries
  */
 export const GET_ALL_CATEGORIES = `
     ${FRAGMENT_CATEGORY}
@@ -52,7 +52,7 @@ export const GET_CATEGORY_BY_NAME = `
 `;
 
 /**
- * MUTATIONS
+ * Mutations
  */
 export const CREATE_CATEGORY = `
     ${FRAGMENT_CATEGORY}
