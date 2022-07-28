@@ -24,7 +24,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
     }),
     UsersModule,
     CategoriesModule,
-    // BlogsModule,
+    BlogsModule,
   ],
   controllers: [AppController],
   providers: [],

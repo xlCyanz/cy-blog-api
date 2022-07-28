@@ -38,7 +38,6 @@ describe("Blogs (e2e)", () => {
   const blog = {
     _id: null,
     title: "Test Blog 1",
-    description: "Test Blog Description 1",
     content: "Test Blog Content 1",
     image: "Test Blog Image 1",
     slug: "test-blog-1",
@@ -143,7 +142,6 @@ describe("Blogs (e2e)", () => {
         query: CREATE_BLOG,
         variables: {
           title: blog.title,
-          description: blog.description,
           content: blog.content,
           image: blog.image,
           category: blog.category,
@@ -159,7 +157,6 @@ describe("Blogs (e2e)", () => {
 
         expect(createBlog).toBeDefined();
         expect(createBlog.title).toBe(blog.title);
-        expect(createBlog.description).toBe(blog.description);
         expect(createBlog.content).toBe(blog.content);
         expect(createBlog.image).toBe(blog.image);
         expect(createBlog.category).toBe(blog.category);
@@ -180,7 +177,6 @@ describe("Blogs (e2e)", () => {
         query: CREATE_BLOG,
         variables: {
           title: blog.title,
-          description: blog.description,
           content: blog.content,
           image: blog.image,
           category: "invalid",
@@ -204,7 +200,6 @@ describe("Blogs (e2e)", () => {
         query: CREATE_BLOG,
         variables: {
           title: blog.title,
-          description: blog.description,
           content: blog.content,
           image: blog.image,
           category: blog.category,
@@ -325,7 +320,6 @@ describe("Blogs (e2e)", () => {
 
         expect(blogByTitle).toBeDefined();
         expect(blogByTitle.title).toBe(blog.title);
-        expect(blogByTitle.description).toBe(blog.description);
         expect(blogByTitle.content).toBe(blog.content);
         expect(blogByTitle.image).toBe(blog.image);
         expect(blogByTitle.category).toBe(blog.category);
@@ -393,7 +387,6 @@ describe("Blogs (e2e)", () => {
 
         expect(blogBySlug).toBeDefined();
         expect(blogBySlug.title).toBe(blog.title);
-        expect(blogBySlug.description).toBe(blog.description);
         expect(blogBySlug.content).toBe(blog.content);
         expect(blogBySlug.image).toBe(blog.image);
         expect(blogBySlug.category).toBe(blog.category);
@@ -459,7 +452,6 @@ describe("Blogs (e2e)", () => {
 
         expect(blogByCategory).toBeDefined();
         expect(blogByCategory.title).toBe(blog.title);
-        expect(blogByCategory.description).toBe(blog.description);
         expect(blogByCategory.content).toBe(blog.content);
         expect(blogByCategory.image).toBe(blog.image);
         expect(blogByCategory.category).toBe(blog.category);
