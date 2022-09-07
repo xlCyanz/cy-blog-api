@@ -1,5 +1,5 @@
 import { User } from "./entities/user.entity";
-import { Response } from "../interfaces/response.interface";
+import { Response } from "src/interfaces";
 import { UsersService } from "./users.service";
 import { ResponseUser } from "./dto/response.user";
 import { CreateUserInput } from "./dto/create-user.input";

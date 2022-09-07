@@ -25,7 +25,7 @@ export class BlogsResolver {
 
   @Mutation(() => Blog)
   updateBlog(@Args("updateBlogInput") updateBlogInput: UpdateBlogInput) {
-    return this.blogsService.update(updateBlogInput.id, updateBlogInput);
+    return this.blogsService.update(0, updateBlogInput);
   }
 
   @Mutation(() => Blog)

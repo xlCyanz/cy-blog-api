@@ -1,5 +1,5 @@
+import { Response } from "src/interfaces";
 import { Category } from "./entities/category.entity";
-import { Response } from "../interfaces/response.interface";
 import { CategoriesService } from "./categories.service";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";

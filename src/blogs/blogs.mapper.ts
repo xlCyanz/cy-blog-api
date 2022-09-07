@@ -6,10 +6,12 @@ import { UpdateBlogInput } from "./dto/update-blog.input";
 @Injectable()
 export class BlogsMapper {
   dtoToEntity(dto: CreateBlogInput | UpdateBlogInput): Blog {
-    return new Blog({ ...dto });
+    // return new Blog({ ...dto });
+    return new Blog();
   }
 
   entityToDto(blog: Blog): CreateBlogInput {
-    return new CreateBlogInput({ ...blog });
+    // return new CreateBlogInput({ ...blog });
+    return new CreateBlogInput();
   }
 }

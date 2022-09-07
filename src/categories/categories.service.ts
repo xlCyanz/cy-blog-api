@@ -1,4 +1,4 @@
-import Utils from "../utils";
+import { Utils } from "../utils";
 import { Injectable } from "@nestjs/common";
 import { CategoriesMapper } from "./categories.mapper";
 import { CreateCategoryInput } from "./dto/create-category.input";

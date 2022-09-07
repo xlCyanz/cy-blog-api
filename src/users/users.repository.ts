@@ -26,7 +26,7 @@ export class UsersRepository {
       if (error.code === 11000) {
         throw new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
-          message: `User named ${newUser.name} already exists`,
+          message: `User named ${newUser.firstname} already exists`,
         });
       } else throw new BadRequestException(error);
     }

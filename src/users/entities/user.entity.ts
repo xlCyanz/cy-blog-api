@@ -9,13 +9,19 @@ export class User {
   @Field(() => String, { description: "User identifier" })
   _id: Types.ObjectId;
 
-  @Field(() => String, { description: "User name" })
+  @Field(() => String, { description: "First name" })
   @Prop({
     required: true,
-    unique: true,
-    message: "User name is required",
+    message: "First name is required",
   })
-  name: string;
+  firstname: string;
+
+  @Field(() => String, { description: "Last name" })
+  @Prop({
+    required: true,
+    message: "Last name is required",
+  })
+  lastname: string;
 
   @Field(() => String, { description: "User password" })
   @Prop({
@@ -46,7 +52,7 @@ export class User {
   @Field(() => Date)
   updatedAt?: Date;
 
-  public async comparePassword(password: string) {
+  public async comparePassword?(password: string) {
     return await bcrypt.compare(password, this.password);
   }
 

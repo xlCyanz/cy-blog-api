@@ -1,4 +1,4 @@
-import Utils from "../utils";
+import { Utils } from "../utils";
 import { Injectable } from "@nestjs/common";
 import { UsersMapper } from "./users.mapper";
 import { UsersRepository } from "./users.repository";

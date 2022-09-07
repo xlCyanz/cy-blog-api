@@ -59,7 +59,7 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 
 BlogSchema.pre("save", function (next) {
   if (!this.slug && this.isNew) {
-    this.slug = slugify(`${this.title}${this.author.name}`, {
+    this.slug = slugify(`${this.title}${this.author.firstname}`, {
       lower: true,
       trim: true,
     });
