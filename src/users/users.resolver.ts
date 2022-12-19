@@ -1,5 +1,4 @@
 import { User } from "./entities/user.entity";
-import { Response } from "src/interfaces";
 import { UsersService } from "./users.service";
 import { ResponseUser } from "./dto/response.user";
 import { CreateUserInput } from "./dto/create-user.input";
@@ -10,6 +9,8 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
+import { MessageCode, Response } from "../interfaces";
+import validationUser from "./entities/create-user.yup";
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -30,7 +31,7 @@ export class UsersResolver {
     if (!userId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "User id is required",
+        messageCode: MessageCode.USER_ID_REQUIRED,
       });
     }
 
@@ -39,49 +40,14 @@ export class UsersResolver {
     if (!userById) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: "User not found",
+        messageCode: MessageCode.USER_NOT_FOUND,
       });
     }
 
     return {
       statusCode: HttpStatus.FOUND,
-      message: "User found",
+      messageCode: MessageCode.USER_FOUND,
       data: userById,
-    };
-  }
-
-  /**
-   *
-   * Method to find user by name.
-   *
-   * @param name - User name
-   *
-   * @returns {Promise<Response<User>>} User
-   */
-  @Query(() => ResponseUser, { name: "userByName" })
-  async findByName(
-    @Args("name", { type: () => String }) name: string,
-  ): Promise<Response<User>> {
-    if (!name) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: "User name is required",
-      });
-    }
-
-    const userByName = await this.usersService.findByName(name);
-
-    if (!userByName) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: "User not found",
-      });
-    }
-
-    return {
-      statusCode: HttpStatus.FOUND,
-      message: "User found",
-      data: userByName,
     };
   }
 
@@ -100,7 +66,7 @@ export class UsersResolver {
     if (!email) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "User email is required",
+        message: MessageCode.USER_MAIL_REQUIRED,
       });
     }
 
@@ -109,13 +75,13 @@ export class UsersResolver {
     if (!userByEmail) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: "User not found",
+        message: MessageCode.USER_NOT_FOUND,
       });
     }
 
     return {
       statusCode: HttpStatus.FOUND,
-      message: "User found",
+      messageCode: MessageCode.USER_FOUND,
       data: userByEmail,
     };
   }
@@ -132,34 +98,21 @@ export class UsersResolver {
   async createUser(
     @Args("input") input: CreateUserInput,
   ): Promise<Response<User>> {
-    if (!input.name) {
+    try {
+      const validateUser = validationUser(input);
+      const userCreated = await this.usersService.create(validateUser);
+
+      return {
+        statusCode: HttpStatus.CREATED,
+        messageCode: MessageCode.USER_FOUND,
+        data: userCreated,
+      };
+    } catch (error) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "User name is required",
+        messageCode: error.errors[0],
       });
     }
-
-    if (!input.email) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: "User email is required",
-      });
-    }
-
-    if (!input.password) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: "User password is required",
-      });
-    }
-
-    const userCreated = await this.usersService.create(input);
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: "User created",
-      data: userCreated,
-    };
   }
 
   /**
@@ -177,7 +130,7 @@ export class UsersResolver {
     if (!updateUserInput.id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "User id is required",
+        message: MessageCode.USER_ID_REQUIRED,
       });
     }
 
@@ -185,7 +138,7 @@ export class UsersResolver {
 
     return {
       statusCode: HttpStatus.OK,
-      message: "User updated",
+      messageCode: MessageCode.USER_UPDATED,
       data: userUpdated,
     };
   }
@@ -205,7 +158,7 @@ export class UsersResolver {
     if (!userId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "User id is required",
+        message: MessageCode.USER_ID_REQUIRED,
       });
     }
 
@@ -214,13 +167,13 @@ export class UsersResolver {
     if (!userRemoved) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: "User not found",
+        message: MessageCode.USER_NOT_FOUND,
       });
     }
 
     return {
       statusCode: HttpStatus.OK,
-      message: "User removed",
+      messageCode: MessageCode.USER_REMOVED,
       data: userRemoved,
     };
   }

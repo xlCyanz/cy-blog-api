@@ -1,3 +1,4 @@
+import { MessageCode } from "./interfaces";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
@@ -6,5 +7,5 @@ export class BaseResponse {
   statusCode: number;
 
   @Field(() => String)
-  message: string;
+  messageCode: MessageCode;
 }

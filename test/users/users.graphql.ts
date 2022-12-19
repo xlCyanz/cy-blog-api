@@ -6,7 +6,8 @@
 export const FRAGMENT_USER = `
 fragment User on User {
   _id
-  name
+  firstname
+  lastname
   email
   password
   avatar
@@ -18,7 +19,7 @@ export const FRAGMENT_RESPONSE_USER = `
 ${FRAGMENT_USER}
 fragment ResponseUser on ResponseUser {
   statusCode
-  message
+  messageCode
   data {
     ...User
   }

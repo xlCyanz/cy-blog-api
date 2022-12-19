@@ -1,4 +1,4 @@
-import { Utils } from "../utils";
+import MongooseUtils from "../utils/mongoose-utils";
 import { Injectable } from "@nestjs/common";
 import { CategoriesMapper } from "./categories.mapper";
 import { CreateCategoryInput } from "./dto/create-category.input";
@@ -20,7 +20,7 @@ export class CategoriesService {
 
   findById(categoryId: string) {
     return this.categoriesRepository.findById(
-      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
+      MongooseUtils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
     );
   }
 
@@ -36,14 +36,14 @@ export class CategoriesService {
 
   update(categoryId: string, updateCategoryInput: UpdateCategoryInput) {
     return this.categoriesRepository.update(
-      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
+      MongooseUtils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
       this.categoriesMapper.dtoToEntity(updateCategoryInput),
     );
   }
 
   remove(categoryId: string) {
     return this.categoriesRepository.remove(
-      Utils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
+      MongooseUtils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
     );
   }
 }

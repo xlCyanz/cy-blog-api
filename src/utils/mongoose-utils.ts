@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { BadRequestException, HttpStatus } from "@nestjs/common";
 
-export default class Utils {
+export default class MongooseUtils {
   /**
    * Method to convert a string to ObjectId bson.
    *
