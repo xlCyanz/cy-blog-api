@@ -1,4 +1,5 @@
 import { InjectModel } from "@nestjs/mongoose";
+import { MessageCode } from "../interfaces";
 import { Model, Types } from "mongoose";
 import { User, UserDocument } from "./entities/user.entity";
 import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
@@ -26,7 +27,7 @@ export class UsersRepository {
       if (error.code === 11000) {
         throw new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
-          message: `User named ${newUser.firstname} already exists`,
+          messageCode: MessageCode.USER_ALREADY_EXISTS,
         });
       } else throw new BadRequestException(error);
     }

@@ -1,7 +1,7 @@
 import MongooseUtils from "../utils/mongoose-utils";
-import { Types } from "mongoose";
 import { Injectable } from "@nestjs/common";
 import { UsersMapper } from "./users.mapper";
+import { MessageCode } from "../interfaces";
 import { UsersRepository } from "./users.repository";
 import { CreateUserInput } from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
@@ -13,10 +13,10 @@ export class UsersService {
     private usersMapper: UsersMapper,
   ) {}
 
-  private exceptionMessageInvalid = "User id is invalid";
-
   findById(userId: string) {
-    return this.usersRepository.findById(userId as unknown as Types.ObjectId);
+    return this.usersRepository.findById(
+      MongooseUtils.stringToObjectId(userId, MessageCode.USER_ID_INVALID),
+    );
   }
 
   findByName(name: string) {
@@ -37,7 +37,7 @@ export class UsersService {
     return this.usersRepository.update(
       MongooseUtils.stringToObjectId(
         updateUserInput.id,
-        this.exceptionMessageInvalid,
+        MessageCode.USER_ID_INVALID,
       ),
       this.usersMapper.dtoToEntity(updateUserInput),
     );
@@ -45,7 +45,7 @@ export class UsersService {
 
   remove(userId: string) {
     return this.usersRepository.remove(
-      MongooseUtils.stringToObjectId(userId, this.exceptionMessageInvalid),
+      MongooseUtils.stringToObjectId(userId, MessageCode.USER_ID_INVALID),
     );
   }
 }

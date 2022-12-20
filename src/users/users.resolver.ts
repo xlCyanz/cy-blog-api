@@ -10,7 +10,10 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { MessageCode, Response } from "../interfaces";
-import validationUser from "./entities/create-user.yup";
+import {
+  validationUser,
+  validationUserEmail,
+} from "./entities/create-user.yup";
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -63,27 +66,40 @@ export class UsersResolver {
   async findByEmail(
     @Args("email", { type: () => String }) email: string,
   ): Promise<Response<User>> {
-    if (!email) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: MessageCode.USER_MAIL_REQUIRED,
-      });
+    try {
+      const validateEmail = validationUserEmail(email);
+      const userByEmail = await this.usersService.findByEmail(validateEmail);
+
+      return {
+        statusCode: HttpStatus.FOUND,
+        messageCode: MessageCode.USER_FOUND,
+        data: userByEmail,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
 
-    const userByEmail = await this.usersService.findByEmail(email);
+    // if (!email) {
+    //   throw new BadRequestException({
+    //     statusCode: HttpStatus.BAD_REQUEST,
+    //     messageCode: MessageCode.USER_MAIL_REQUIRED,
+    //   });
+    // }
 
-    if (!userByEmail) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        message: MessageCode.USER_NOT_FOUND,
-      });
-    }
+    // const userByEmail = await this.usersService.findByEmail(email);
 
-    return {
-      statusCode: HttpStatus.FOUND,
-      messageCode: MessageCode.USER_FOUND,
-      data: userByEmail,
-    };
+    // if (!userByEmail) {
+    //   throw new NotFoundException({
+    //     statusCode: HttpStatus.NOT_FOUND,
+    //     messageCode: MessageCode.USER_NOT_FOUND,
+    //   });
+    // }
+
+    // return {
+    //   statusCode: HttpStatus.FOUND,
+    //   messageCode: MessageCode.USER_FOUND,
+    //   data: userByEmail,
+    // };
   }
 
   /**
@@ -104,13 +120,12 @@ export class UsersResolver {
 
       return {
         statusCode: HttpStatus.CREATED,
-        messageCode: MessageCode.USER_FOUND,
+        messageCode: MessageCode.USER_CREATED,
         data: userCreated,
       };
     } catch (error) {
       throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        messageCode: error.errors[0],
+        ...error.response,
       });
     }
   }

@@ -23,4 +23,14 @@ const validationUser = (user: CreateUserInput) => {
   return userSchema.validateSync(user);
 };
 
-export default validationUser;
+const validationUserEmail = (email: string) => {
+  const { USER_MAIL_INVALID, USER_MAIL_REQUIRED } = MessageCode;
+
+  const userEmailSchema = yup.object({
+    email: yup.string().email(USER_MAIL_INVALID).required(USER_MAIL_REQUIRED),
+  });
+
+  return userEmailSchema.validateSync({ email }).email;
+};
+
+export { validationUser, validationUserEmail };

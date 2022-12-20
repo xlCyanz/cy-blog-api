@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 import { BadRequestException, HttpStatus } from "@nestjs/common";
 
+import { MessageCode } from "../interfaces";
+
 export default class MongooseUtils {
   /**
    * Method to convert a string to ObjectId bson.
@@ -13,7 +15,7 @@ export default class MongooseUtils {
     if (!Types.ObjectId.isValid(userId)) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: exceptionMessage || "Object id is invalid",
+        messageCode: exceptionMessage || MessageCode.USER_ID_INVALID,
       });
     }
 
