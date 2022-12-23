@@ -18,7 +18,6 @@ export default class MongooseUtils {
         messageCode: exceptionMessage || MessageCode.USER_ID_INVALID,
       });
     }
-
     return new Types.ObjectId(userId);
   }
 }

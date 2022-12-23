@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
-import { IUser } from "src/interfaces";
+
+import { IUser } from "../interfaces";
 
 export default class FakeUtils {
   public getUser(): IUser {

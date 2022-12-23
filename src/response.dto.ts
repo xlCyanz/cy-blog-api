@@ -1,5 +1,6 @@
-import { MessageCode } from "./interfaces";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+
+import { MessageCode } from "./interfaces";
 
 @ObjectType()
 export class BaseResponse {

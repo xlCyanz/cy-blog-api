@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-types */
 export default class Utilities {
-  static pickFromObjectProperties<T extends {}>(
+  static pickFromObjectProperties<T extends object>(
     obj: T,
     properties: (keyof T)[],
   ) {
