@@ -1,8 +1,9 @@
 import { InjectModel } from "@nestjs/mongoose";
-import { MessageCode } from "../interfaces";
 import { Model, Types } from "mongoose";
-import { User, UserDocument } from "./entities/user.entity";
 import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
+
+import { MessageCode } from "../interfaces";
+import { User, UserDocument } from "./entities/user.entity";
 
 @Injectable()
 export class UsersRepository {

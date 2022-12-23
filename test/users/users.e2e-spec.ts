@@ -1,8 +1,11 @@
 import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { AppModule } from "../../src/app.module";
+
 import FakeUtils from "../../src/utils/fake-utils";
+import Utilities from "../../src/utils/utilities";
+import { AppModule } from "../../src/app.module";
+import { IUser, MessageCode } from "../../src/interfaces";
 import {
   CREATE_USER,
   REMOVE_USER,
@@ -11,8 +14,6 @@ import {
   GET_USER_BY_NAME,
   GET_USER_BY_EMAIL,
 } from "./users.graphql";
-import { IUser, MessageCode } from "../../src/interfaces";
-import Utilities from "../../src/utils/utilities";
 
 describe("Users (e2e)", () => {
   let app: INestApplication;
@@ -37,9 +38,14 @@ describe("Users (e2e)", () => {
       "role",
     ]))();
 
-  const updateUser = {
+  const updatedUser: IUser = {
     _id: null,
-    ...faker.getUser(),
+    ...(Utilities.omitFromObjectProperties<IUser>(faker.getUser(), [
+      "password",
+      "comparePassword",
+      "email",
+      "role",
+    ]) as unknown as IUser),
   };
 
   it("No query test should have typename", async () => {
@@ -81,8 +87,9 @@ describe("Users (e2e)", () => {
         expect(createUser.data.role).toBeDefined();
         expect(createUser.data.role).toBe("user");
         expect(createUser.data.avatar).toBe(user.avatar);
+        expect(createUser.data.createdAt).toBeDefined();
 
-        updateUser._id = createUser.data._id;
+        updatedUser._id = createUser.data._id;
       }));
 
   it("Create a duplicate user", async () =>
@@ -111,7 +118,7 @@ describe("Users (e2e)", () => {
       .send({
         query: GET_USER_BY_ID,
         variables: {
-          id: updateUser._id,
+          id: updatedUser._id,
         },
       })
       .expect(200)
@@ -155,7 +162,7 @@ describe("Users (e2e)", () => {
       .send({
         query: GET_USER_BY_ID,
         variables: {
-          id: `${updateUser._id}${updateUser._id}`,
+          id: `${updatedUser._id}${updatedUser._id}`,
         },
       })
       .expect(200)
@@ -205,7 +212,6 @@ describe("Users (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        console.log(res.body.errors);
         const error = res.body.errors[0].extensions.response;
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -220,7 +226,7 @@ describe("Users (e2e)", () => {
       .send({
         query: GET_USER_BY_EMAIL,
         variables: {
-          email: `${user.email}${user.email}`,
+          email: `2472874282msfbhjhwu`,
         },
       })
       .expect(200)
@@ -240,23 +246,23 @@ describe("Users (e2e)", () => {
         query: UPDATE_USER,
         variables: {
           input: {
-            ...updateUser,
+            ...updatedUser,
           },
         },
       })
       .expect(200)
       .then((res) => {
-        const { updatedUser } = res.body.data;
+        const { updateUser } = res.body.data;
 
-        expect(updatedUser.statusCode).toBe(HttpStatus.OK);
-        expect(updatedUser.message).toBe(MessageCode.USER_UPDATED);
-        expect(updatedUser.data).toBeDefined();
+        expect(updateUser.statusCode).toBe(HttpStatus.OK);
+        expect(updateUser.messageCode).toBe(MessageCode.USER_UPDATED);
+        expect(updateUser.data).toBeDefined();
 
-        expect(updatedUser.data._id).toBeDefined();
-        expect(updatedUser.data.updatedAt).toBeDefined();
-        expect(updatedUser.data.firstname).toBe(updateUser.firstname);
-        expect(updatedUser.data.lastname).toBe(updateUser.lastname);
-        expect(updatedUser.data.avatar).toBe(updateUser.avatar);
+        expect(updateUser.data._id).toBeDefined();
+        expect(updateUser.data.updatedAt).toBeDefined();
+        expect(updateUser.data.firstname).toBe(updatedUser.firstname);
+        expect(updateUser.data.lastname).toBe(updatedUser.lastname);
+        expect(updateUser.data.avatar).toBe(updatedUser.avatar);
       });
   });
 
@@ -267,7 +273,28 @@ describe("Users (e2e)", () => {
         query: UPDATE_USER,
         variables: {
           input: {
-            id: "",
+            _id: "",
+          },
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
+
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      });
+  });
+
+  it("Update a user with invalid id", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: UPDATE_USER,
+        variables: {
+          input: {
+            _id: `${updatedUser._id}${updatedUser._id}`,
           },
         },
       })
@@ -281,81 +308,61 @@ describe("Users (e2e)", () => {
       });
   });
 
-  // it("Update a user with invalid id", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: UPDATE_USER,
-  //       variables: {
-  //         input: {
-  //           id: `${user._id}${user._id}`,
-  //         },
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
+  it("Remove a user", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_USER,
+        variables: {
+          id: updatedUser._id,
+        },
+      })
+      // .expect(200)
+      .then((res) => {
+        console.log(res);
+        const { removeUser } = res.body.data;
 
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
+        expect(removeUser.statusCode).toBe(HttpStatus.OK);
+        expect(removeUser.messageCode).toBe(MessageCode.USER_REMOVED);
+        expect(removeUser.data).toBeDefined();
+      });
+  });
 
-  // it("Remove a user", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_USER,
-  //       variables: {
-  //         id: user._id,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const { removeUser } = res.body.data;
+  it("Remove a user with empty id", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_USER,
+        variables: {
+          id: "",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(removeUser.statusCode).toBe(HttpStatus.OK);
-  //       expect(removeUser.messageCode).toBe(MessageCode.USER_REMOVED);
-  //       expect(removeUser.data).toBeDefined();
-  //     });
-  // });
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      });
+  });
 
-  // it("Remove a user with empty id", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_USER,
-  //       variables: {
-  //         id: "",
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
+  it("Remove a user with invalid id", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_USER,
+        variables: {
+          id: `${updatedUser._id}${updatedUser._id}`,
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
-
-  // it("Remove a user with invalid id", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_USER,
-  //       variables: {
-  //         id: `${user._id}${user._id}`,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
-
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
+        expect(res.body.data).toBeNull();
+      });
+  });
 });

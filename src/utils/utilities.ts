@@ -12,7 +12,9 @@ export default class Utilities {
   static omitFromObjectProperties<T extends object>(
     obj: T,
     properties: (keyof T)[],
-  ) {
+  ): {
+    [k: string]: T[keyof T];
+  } {
     return Object.fromEntries(
       Object.keys(obj)
         .filter((key) => !properties.includes(key as keyof T))

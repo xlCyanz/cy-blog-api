@@ -7,7 +7,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 @Schema({ timestamps: true })
 export class User {
   @Field(() => String, { description: "User identifier" })
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
 
   @Field(() => String, { description: "First name" })
   @Prop({

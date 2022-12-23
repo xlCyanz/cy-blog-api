@@ -1,5 +1,6 @@
-import MongooseUtils from "../utils/mongoose-utils";
 import { Injectable } from "@nestjs/common";
+
+import MongooseUtils from "../utils/mongoose-utils";
 import { UsersMapper } from "./users.mapper";
 import { MessageCode } from "../interfaces";
 import { UsersRepository } from "./users.repository";
@@ -36,7 +37,7 @@ export class UsersService {
   update(updateUserInput: UpdateUserInput) {
     return this.usersRepository.update(
       MongooseUtils.stringToObjectId(
-        updateUserInput.id,
+        updateUserInput._id,
         MessageCode.USER_ID_INVALID,
       ),
       this.usersMapper.dtoToEntity(updateUserInput),

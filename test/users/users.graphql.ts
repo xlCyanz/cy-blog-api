@@ -12,6 +12,8 @@ fragment User on User {
   password
   avatar
   role
+  createdAt
+  updatedAt
 }
 `;
 

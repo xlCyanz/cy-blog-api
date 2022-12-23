@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
-import { MessageCode } from "../../interfaces";
-import { CreateUserInput } from "../dto/create-user.input";
+import { MessageCode } from "../interfaces";
+import { CreateUserInput } from "../users/dto/create-user.input";
 
 const validationUser = (user: CreateUserInput) => {
   const {
