@@ -6,12 +6,11 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 @Schema({ timestamps: true })
 export class Category {
   @Field(() => String, { description: "Category identifier" })
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
 
   @Field(() => String, { description: "Category name" })
   @Prop({
     required: true,
-    unique: true,
     message: "Category name is required",
   })
   name: string;
@@ -19,6 +18,8 @@ export class Category {
   @Field(() => String, { description: "Category description", nullable: true })
   @Prop({
     required: false,
+    index: true,
+    unique: true,
     message: "Category description is required",
   })
   description: string;

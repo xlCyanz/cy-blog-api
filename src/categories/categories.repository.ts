@@ -1,7 +1,9 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { Category, CategoryDocument } from "./entities/category.entity";
 import { Injectable, BadRequestException, HttpStatus } from "@nestjs/common";
+
+import { MessageCode } from "../interfaces";
+import { Category, CategoryDocument } from "./entities/category.entity";
 
 @Injectable()
 export class CategoriesRepository {
@@ -26,9 +28,10 @@ export class CategoriesRepository {
       return await this.categoryModel.create(newCategory);
     } catch (error) {
       if (error.code === 11000) {
+        console.log("category_already");
         throw new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
-          message: `Category named ${newCategory.name} already exists`,
+          messageCode: MessageCode.CATEGORY_ALREADY_EXISTS,
         });
       } else throw new BadRequestException(error);
     }

@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-import { IUser } from "../interfaces";
+import { ICategory, IUser } from "../interfaces";
 
 export default class FakeUtils {
   public getUser(): IUser {
@@ -19,6 +19,14 @@ export default class FakeUtils {
     return {
       ...this.getUser(),
       role: "admin",
+    };
+  }
+
+  public getCategory(): ICategory {
+    return {
+      _id: null,
+      name: faker.company.name(),
+      description: faker.lorem.paragraph(3),
     };
   }
 }

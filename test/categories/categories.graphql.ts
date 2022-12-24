@@ -2,97 +2,91 @@
  * Fragmentes
  */
 const FRAGMENT_CATEGORY = `
-    fragment Category on Category {
-        _id
-        name
-        description
-    }
+fragment Category on Category {
+  _id
+  name
+  description
+}
+`;
+
+const FRAGMENT_RESPONSE_CATEGORY = `
+${FRAGMENT_CATEGORY}
+fragment ResponseCategory on ResponseCategory {
+  messageCode
+  statusCode
+  data {
+    ...Category
+  }
+}
+`;
+
+const FRAGMENT_RESPONSE_CATEGORIES = `
+${FRAGMENT_CATEGORY}
+fragment ResponseCategories on ResponseCategories {
+  messageCode
+  statusCode
+  data {
+    ...Category
+  }
+}
 `;
 
 /**
  * Queries
  */
 export const GET_ALL_CATEGORIES = `
-    ${FRAGMENT_CATEGORY}
-    query GET_ALL_CATEGORIES {
-        categories {
-          message
-          statusCode
-          data {
-            ...Category
-          }
-        }
-    }
+${FRAGMENT_RESPONSE_CATEGORIES}
+query GET_ALL_CATEGORIES {
+  categories {
+    ...ResponseCategories
+  }
+}
 `;
 
 export const GET_CATEGORY_BY_ID = `
-    ${FRAGMENT_CATEGORY}
-    query GET_CATEGORY_BY_ID($id: String!) {
-        categoryById(id: $id) {
-          message
-          statusCode
-          data {
-            ...Category
-          }
-        }
-    }
+${FRAGMENT_RESPONSE_CATEGORY}
+query GET_CATEGORY_BY_ID($id: String!) {
+  categoryById(_id: $id) {
+    ...ResponseCategory
+  }
+}
 `;
 
 export const GET_CATEGORY_BY_NAME = `
-    ${FRAGMENT_CATEGORY}
-    query GET_CATEGORY_BY_NAME($name: String!) {
-        categoryByName(name: $name) {
-          message
-          statusCode
-          data {
-            ...Category
-          }
-        }
-    }
+${FRAGMENT_RESPONSE_CATEGORY}
+query GET_CATEGORY_BY_NAME($name: String!) {
+  categoryByName(name: $name) {
+    ...ResponseCategory
+  }
+}
 `;
 
 /**
  * Mutations
  */
 export const CREATE_CATEGORY = `
-    ${FRAGMENT_CATEGORY}
-    mutation CREATE_CATEGORY($name: String!, $description: String) {
-        createCategory(input: { name: $name, description: $description }) {
-          statusCode
-          message
-          data {
-            ...Category
-          }
-        }
-    }
+${FRAGMENT_RESPONSE_CATEGORY}
+mutation CREATE_CATEGORY($name: String!, $description: String) {
+  createCategory(input: { name: $name, description: $description }) {
+    ...ResponseCategory
+  }
+}
 `;
 
 export const UPDATE_CATEGORY = `
-  ${FRAGMENT_CATEGORY}
-  mutation UPDATE_CATEGORY($id: String!, $name: String, $description: String) {
-    updateCategory(input: {
-      id: $id,
-      name: $name,
-      description: $description
-    }) {
-      statusCode
-      message
-      data {
-        ...Category
-      }
-    }
+${FRAGMENT_RESPONSE_CATEGORY}
+mutation UPDATE_CATEGORY($id: String!, $name: String, $description: String) {
+  updateCategory(input: { _id: $id, name: $name, description: $description }) {
+    ...ResponseCategory
   }
+}
 `;
 
 export const REMOVE_CATEGORY = `
-  ${FRAGMENT_CATEGORY}
-  mutation REMOVE_CATEGORY($id: String!) {
-    removeCategory(id: $id) {
-      statusCode
-      message
-      data {
-        ...Category
-      }
-    }
+${FRAGMENT_RESPONSE_CATEGORY}
+mutation REMOVE_CATEGORY($id: String!) {
+  removeCategory(_id: $id) {
+    ...ResponseCategory
   }
+}
 `;

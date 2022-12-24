@@ -1,86 +1,68 @@
-import { Response } from "src/interfaces";
+import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+  HttpStatus,
+} from "@nestjs/common";
+
 import { Category } from "./entities/category.entity";
 import { CategoriesService } from "./categories.service";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { MessageCode, Response } from "../interfaces";
 import { ResponseCategories, ResponseCategory } from "./dto/response.category";
-import { BadRequestException, HttpException, HttpStatus } from "@nestjs/common";
+import { validationCategory } from "./categories.yup";
 
 @Resolver(() => Category)
 export class CategoriesResolver {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  /**
-   * Method to find all categories.
-   *
-   * @returns {Promise<Response<Category[]>>} Categories
-   */
   @Query(() => ResponseCategories, { name: "categories" })
   async findAll(): Promise<Response<Category[]>> {
     const categories = await this.categoriesService.findAll();
 
     if (categories.length === 0 || !categories) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: "Categories not found",
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        messageCode: MessageCode.CATEGORIES_NOT_FOUND,
+      });
     }
 
     return {
       statusCode: HttpStatus.FOUND,
-      message: "Categories found",
+      messageCode: MessageCode.CATEGORIES_FOUND,
       data: categories,
     };
   }
 
-  /**
-   * Method to find one category by id.
-   *
-   * @param categoryId - Category id
-   *
-   * @returns {Promise<Response<Category>>} Category
-   */
   @Query(() => ResponseCategory, { name: "categoryById" })
   async findById(
-    @Args("id", { type: () => String }) categoryId: string,
+    @Args("_id", { type: () => String }) categoryId: string,
   ): Promise<Response<Category>> {
     if (!categoryId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Category id is required",
+        messageCode: MessageCode.CATEGORY_ID_REQUIRED,
       });
     }
 
     const category = await this.categoriesService.findById(categoryId);
 
     if (!category) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: "Category not found",
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        messageCode: MessageCode.CATEGORY_NOT_FOUND,
+      });
     }
 
     return {
       statusCode: HttpStatus.FOUND,
-      message: "Category found",
+      messageCode: MessageCode.CATEGORY_FOUND,
       data: category,
     };
   }
 
-  /**
-   * Method to find one category by name.
-   *
-   * @param categoryName - Category name
-   *
-   * @returns {Promise<Response<Category>>} Category
-   */
   @Query(() => ResponseCategory, { name: "categoryByName" })
   async findByName(
     @Args("name", { type: () => String }) categoryName: string,
@@ -88,61 +70,45 @@ export class CategoriesResolver {
     if (!categoryName) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: "Category name is required",
+        messageCode: MessageCode.CATEGORY_NAME_REQUIRED,
       });
     }
 
     const category = await this.categoriesService.findByName(categoryName);
 
     if (!category) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: "Category not found",
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        messageCode: MessageCode.CATEGORY_NOT_FOUND,
+      });
     }
 
     return {
       statusCode: HttpStatus.FOUND,
-      message: "Category found",
+      messageCode: MessageCode.CATEGORY_FOUND,
       data: category,
     };
   }
 
-  /**
-   * Method to create a new category.
-   *
-   * @param input - Category name
-   *
-   * @returns {Promise<Response<Category>>} Category
-   */
   @Mutation(() => ResponseCategory)
   async createCategory(
     @Args("input", { type: () => CreateCategoryInput })
     input: CreateCategoryInput,
   ): Promise<Response<Category>> {
-    if (!input.name)
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: "Category name is required",
-      });
+    try {
+      const validateCategory = validationCategory(input);
+      const newCategory = await this.categoriesService.create(validateCategory);
 
-    if (!input.description) {
+      return {
+        statusCode: HttpStatus.CREATED,
+        messageCode: MessageCode.CATEGORY_CREATED,
+        data: newCategory,
+      };
+    } catch (error) {
       throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: "Category description is required",
+        ...error.response,
       });
     }
-
-    const newCategory = await this.categoriesService.create(input);
-
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: "Category created",
-      data: newCategory,
-    };
   }
 
   /**
@@ -154,14 +120,14 @@ export class CategoriesResolver {
   async updateCategory(
     @Args("input") input: UpdateCategoryInput,
   ): Promise<Response<Category>> {
-    if (!input.id)
+    if (!input._id)
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: "Category id is required",
       });
 
     const categoryUpdated = await this.categoriesService.update(
-      input.id,
+      input._id,
       input,
     );
 
@@ -181,7 +147,7 @@ export class CategoriesResolver {
    */
   @Mutation(() => ResponseCategory)
   async removeCategory(
-    @Args("id", { type: () => String }) categoryId: string,
+    @Args("_id", { type: () => String }) categoryId: string,
   ): Promise<Response<Category>> {
     if (!categoryId)
       throw new BadRequestException({

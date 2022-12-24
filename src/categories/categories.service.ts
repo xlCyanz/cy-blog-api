@@ -1,5 +1,7 @@
-import MongooseUtils from "../utils/mongoose-utils";
 import { Injectable } from "@nestjs/common";
+
+import MongooseUtils from "../utils/mongoose-utils";
+import { MessageCode } from "../interfaces";
 import { CategoriesMapper } from "./categories.mapper";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";
@@ -20,7 +22,10 @@ export class CategoriesService {
 
   findById(categoryId: string) {
     return this.categoriesRepository.findById(
-      MongooseUtils.stringToObjectId(categoryId, this.exceptionMessageInvalid),
+      MongooseUtils.stringToObjectId(
+        categoryId,
+        MessageCode.CATEGORY_ID_INVALID,
+      ),
     );
   }
 
