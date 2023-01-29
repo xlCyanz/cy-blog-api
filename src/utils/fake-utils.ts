@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-import { ICategory, IUser } from "../interfaces";
+import { ICategory, IPost, IUser } from "../interfaces";
 
 export default class FakeUtils {
   public getUser(): IUser {
@@ -27,6 +27,15 @@ export default class FakeUtils {
       _id: null,
       name: faker.company.name(),
       description: faker.lorem.paragraph(3),
+    };
+  }
+
+  public getPost(): Partial<IPost> {
+    return {
+      _id: null,
+      title: faker.company.name(),
+      content: faker.lorem.paragraph(6),
+      image: faker.image.animals(),
     };
   }
 }

@@ -317,9 +317,8 @@ describe("Users (e2e)", () => {
           id: updatedUser._id,
         },
       })
-      // .expect(200)
+      .expect(200)
       .then((res) => {
-        console.log(res);
         const { removeUser } = res.body.data;
 
         expect(removeUser.statusCode).toBe(HttpStatus.OK);

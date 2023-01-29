@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { CreateBlogInput } from "./dto/create-blog.input";
-import { UpdateBlogInput } from "./dto/update-blog.input";
+
+import { CreatePostInput } from "./dto/create-post.input";
+import { UpdatePostInput } from "./dto/update-post.input";
 
 @Injectable()
-export class BlogsRepository {
-  create(createBlogInput: CreateBlogInput) {
+export class PostsRepository {
+  create(createBlogInput: CreatePostInput) {
     return "This action adds a new blog";
   }
 
@@ -16,7 +17,7 @@ export class BlogsRepository {
     return `This action returns a #${id} blog`;
   }
 
-  update(id: number, updateBlogInput: UpdateBlogInput) {
+  update(id: number, updateBlogInput: UpdatePostInput) {
     return `This action updates a #${id} blog`;
   }
 

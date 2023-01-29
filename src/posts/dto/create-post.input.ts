@@ -1,7 +1,7 @@
 import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
-export class CreateBlogInput {
+export class CreatePostInput {
   @Field(() => String)
   title: string;
 
@@ -12,12 +12,12 @@ export class CreateBlogInput {
   image: string;
 
   @Field(() => String)
-  author: string;
+  authorId: string;
 
-  @Field(() => String)
-  category: string;
+  @Field(() => String, { nullable: true })
+  categoryId: string;
 
-  constructor(init?: Partial<CreateBlogInput>) {
+  constructor(init?: Partial<CreatePostInput>) {
     Object.assign(this, init);
   }
 }

@@ -9,6 +9,7 @@ import { ConfigModule } from "./config/config.module";
 import { AppController } from "./app.controller";
 import { ConfigService } from "./config/config.service";
 import { CategoriesModule } from "./categories/categories.module";
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CategoriesModule } from "./categories/categories.module";
     UsersModule,
     CategoriesModule,
     BlogsModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [],

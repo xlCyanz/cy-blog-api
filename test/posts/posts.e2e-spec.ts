@@ -1,28 +1,33 @@
 import * as request from "supertest";
-import { AppModule } from "../../src/app.module";
-import { CREATE_USER } from "test/users/users.graphql";
-import { CREATE_CATEGORY } from "test/categories/categories.graphql";
-import { CreateUserInput } from "../../src/users/dto/create-user.input";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CreateCategoryInput } from "../../src/categories/dto/create-category.input";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import {
-  GET_BLOG,
-  GET_BLOGS,
-  CREATE_BLOG,
-  REMOVE_BLOG,
-  UPDATE_BLOG,
-  GET_BLOG_BY_ID,
-  GET_BLOG_BY_SLUG,
-  GET_BLOG_BY_TITLE,
-  GET_BLOGS_BY_AUTHOR,
-  GET_BLOGS_BY_CATEGORY,
-  GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
-} from "./blogs.graphql";
 
-describe("Blogs (e2e)", () => {
+import FakeUtils from "../../src/utils/fake-utils";
+import { AppModule } from "../../src/app.module";
+import { CREATE_USER } from "../users/users.graphql";
+import { CREATE_CATEGORY } from "../categories/categories.graphql";
+import {
+  GET_POST,
+  GET_POSTS,
+  CREATE_POST,
+  REMOVE_POST,
+  UPDATE_POST,
+  GET_POST_BY_ID,
+  GET_POST_BY_SLUG,
+  GET_POST_BY_TITLE,
+  GET_POSTS_BY_AUTHOR,
+  GET_POSTS_BY_CATEGORY,
+  GET_POSTS_BY_AUTHOR_AND_CATEGORY,
+} from "./posts.graphql";
+
+describe("Posts (e2e)", () => {
   let app: INestApplication;
   const path = "/graphql";
+  const faker = new FakeUtils();
+
+  const post = faker.getPost();
+  const category = faker.getCategory();
+  const author = faker.getUser();
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,42 +40,18 @@ describe("Blogs (e2e)", () => {
 
   afterEach(async () => await app.close());
 
-  const blog = {
-    _id: null,
-    title: "Test Blog 1",
-    content: "Test Blog Content 1",
-    image: "Test Blog Image 1",
-    slug: "test-blog-1",
-    category: null,
-    author: null,
-  };
-
-  const category: CreateCategoryInput & { _id: string } = {
-    _id: null,
-    name: "Test Category 1",
-    description: "Test Category Description 1",
-  };
-
-  const author: CreateUserInput & { _id: string } = {
-    _id: null,
-    name: "Test User 1",
-    password: "Test User Password 1",
-    email: "Test User Email 1",
-    avatar: "Test User Image 1",
-  };
-
   it("No query test should have typename", async () => {
-    expect(GET_BLOGS.includes("typename")).toBe(false);
-    expect(GET_BLOG.includes("typename")).toBe(false);
-    expect(GET_BLOG_BY_ID.includes("typename")).toBe(false);
-    expect(GET_BLOG_BY_TITLE.includes("typename")).toBe(false);
-    expect(GET_BLOG_BY_SLUG.includes("typename")).toBe(false);
-    expect(GET_BLOGS_BY_CATEGORY.includes("typename")).toBe(false);
-    expect(GET_BLOGS_BY_AUTHOR.includes("typename")).toBe(false);
-    expect(GET_BLOGS_BY_AUTHOR_AND_CATEGORY.includes("typename")).toBe(false);
-    expect(CREATE_BLOG.includes("typename")).toBe(false);
-    expect(UPDATE_BLOG.includes("typename")).toBe(false);
-    expect(REMOVE_BLOG.includes("typename")).toBe(false);
+    expect(GET_POSTS.includes("typename")).toBe(false);
+    expect(GET_POST.includes("typename")).toBe(false);
+    expect(GET_POST_BY_ID.includes("typename")).toBe(false);
+    expect(GET_POST_BY_TITLE.includes("typename")).toBe(false);
+    expect(GET_POST_BY_SLUG.includes("typename")).toBe(false);
+    expect(GET_POSTS_BY_CATEGORY.includes("typename")).toBe(false);
+    expect(GET_POSTS_BY_AUTHOR.includes("typename")).toBe(false);
+    expect(GET_POSTS_BY_AUTHOR_AND_CATEGORY.includes("typename")).toBe(false);
+    expect(CREATE_POST.includes("typename")).toBe(false);
+    expect(UPDATE_POST.includes("typename")).toBe(false);
+    expect(REMOVE_POST.includes("typename")).toBe(false);
   });
 
   it("Create a category and an author", async () => {
@@ -96,11 +77,11 @@ describe("Blogs (e2e)", () => {
         expect(createCategory.name).toBe(category.name);
         expect(createCategory.description).toBe(category.description);
 
-        blog.category = createCategory._id;
+        post.category = createCategory._id;
         category._id = createCategory._id;
 
-        expect(blog.category).toBeDefined();
-        expect(blog.category).not.toBeNull();
+        expect(post.category).toBeDefined();
+        expect(post.category).not.toBeNull();
       });
 
     await server
@@ -108,7 +89,8 @@ describe("Blogs (e2e)", () => {
       .send({
         query: CREATE_USER,
         variables: {
-          name: author.name,
+          firstname: author.firstname,
+          lastname: author.lastname,
           password: author.password,
           email: author.email,
           avatar: author.avatar,
@@ -122,65 +104,66 @@ describe("Blogs (e2e)", () => {
         expect(createUser.message).toBe("User created");
 
         expect(createUser).toBeDefined();
-        expect(createUser.name).toBe(author.name);
+        expect(createUser.firstname).toBe(author.firstname);
+        expect(createUser.lastname).toBe(author.lastname);
         expect(createUser.password).not.toBe(author.password);
         expect(createUser.email).toBe(author.email);
         expect(createUser.avatar).toBe(author.avatar);
 
-        blog.author = createUser._id;
+        post.author = createUser._id;
         author._id = createUser._id;
 
-        expect(blog.author).toBeDefined();
-        expect(blog.author).not.toBeNull();
+        expect(post.author).toBeDefined();
+        expect(post.author).not.toBeNull();
       });
   });
 
-  it("Create a blog", async () => {
+  it("Create a post", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: CREATE_BLOG,
+        query: CREATE_POST,
         variables: {
-          title: blog.title,
-          content: blog.content,
-          image: blog.image,
-          category: blog.category,
-          author: blog.author,
+          title: post.title,
+          content: post.content,
+          image: post.image,
+          categoryId: post.category,
+          authorId: post.author,
         },
       })
       .expect(200)
       .then((res) => {
-        const { createBlog } = res.body.data;
+        const { createPost } = res.body.data;
 
-        expect(createBlog.statusCode).toBe(HttpStatus.CREATED);
-        expect(createBlog.message).toBe("Blog created");
+        expect(createPost.statusCode).toBe(HttpStatus.CREATED);
+        expect(createPost.message).toBe("Post created");
 
-        expect(createBlog).toBeDefined();
-        expect(createBlog.title).toBe(blog.title);
-        expect(createBlog.content).toBe(blog.content);
-        expect(createBlog.image).toBe(blog.image);
-        expect(createBlog.category).toBe(blog.category);
-        expect(createBlog.author).toBe(blog.author);
+        expect(createPost).toBeDefined();
+        expect(createPost.title).toBe(post.title);
+        expect(createPost.content).toBe(post.content);
+        expect(createPost.image).toBe(post.image);
+        expect(createPost.category).toBe(post.category);
+        expect(createPost.author).toBe(post.author);
 
-        blog._id = createBlog._id;
-        blog.slug = createBlog.slug;
+        post._id = createPost._id;
+        post.slug = createPost.slug;
 
-        expect(blog._id).toBeDefined();
-        expect(blog._id).not.toBeNull();
+        expect(post._id).toBeDefined();
+        expect(post._id).not.toBeNull();
       });
   });
 
-  it("Create a blog with invalid category", async () => {
+  it("Create a post with invalid category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: CREATE_BLOG,
+        query: CREATE_POST,
         variables: {
-          title: blog.title,
-          content: blog.content,
-          image: blog.image,
+          title: post.title,
+          content: post.content,
+          image: post.image,
           category: "invalid",
-          author: blog.author,
+          author: post.author,
         },
       })
       .expect(200)
@@ -193,16 +176,16 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Create a blog with invalid author", async () => {
+  it("Create a post with invalid author", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: CREATE_BLOG,
+        query: CREATE_POST,
         variables: {
-          title: blog.title,
-          content: blog.content,
-          image: blog.image,
-          category: blog.category,
+          title: post.title,
+          content: post.content,
+          image: post.image,
+          category: post.category,
           author: "invalid",
         },
       })
@@ -216,55 +199,55 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get all blogs", async () => {
+  it("Get all posts", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS,
+        query: GET_POSTS,
       })
       .expect(200)
       .then((res) => {
-        const { blogs } = res.body.data;
+        const { posts } = res.body.data;
 
-        expect(blogs.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogs.message).toBe("Blogs found");
+        expect(posts.statusCode).toBe(HttpStatus.FOUND);
+        expect(posts.message).toBe("posts found");
 
-        expect(blogs).toBeDefined();
-        expect(blogs.length).toBeGreaterThan(0);
+        expect(posts).toBeDefined();
+        expect(posts.length).toBeGreaterThan(0);
       });
   });
 
-  it("Get a blog by id", async () => {
+  it("Get a post by id", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_ID,
+        query: GET_POST_BY_ID,
         variables: {
-          id: blog._id,
+          id: post._id,
         },
       })
       .expect(200)
       .then((res) => {
-        const { blog } = res.body.data;
+        const { post } = res.body.data;
 
-        expect(blog.statusCode).toBe(HttpStatus.FOUND);
-        expect(blog.message).toBe("Blog found");
+        expect(post.statusCode).toBe(HttpStatus.FOUND);
+        expect(post.message).toBe("post found");
 
-        expect(blog).toBeDefined();
-        expect(blog.title).toBe(blog.title);
-        expect(blog.description).toBe(blog.description);
-        expect(blog.content).toBe(blog.content);
-        expect(blog.image).toBe(blog.image);
-        expect(blog.category).toBe(blog.category);
-        expect(blog.author).toBe(blog.author);
+        expect(post).toBeDefined();
+        expect(post.title).toBe(post.title);
+        expect(post.description).toBe(post.description);
+        expect(post.content).toBe(post.content);
+        expect(post.image).toBe(post.image);
+        expect(post.category).toBe(post.category);
+        expect(post.author).toBe(post.author);
       });
   });
 
-  it("Get a blog by empty id", async () => {
+  it("Get a post by empty id", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_ID,
+        query: GET_POST_BY_ID,
         variables: {
           id: "",
         },
@@ -276,18 +259,18 @@ describe("Blogs (e2e)", () => {
         expect(error.extensions.response.statusCode).toBe(
           HttpStatus.BAD_REQUEST,
         );
-        expect(error.message).toBe("Blog id is required");
+        expect(error.message).toBe("post id is required");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a blog by invalid id", async () => {
+  it("Get a post by invalid id", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_ID,
+        query: GET_POST_BY_ID,
         variables: {
-          id: `${blog._id}invalid`,
+          id: `${post._id}invalid`,
         },
       })
       .expect(200)
@@ -297,41 +280,41 @@ describe("Blogs (e2e)", () => {
         expect(error.extensions.response.statusCode).toBe(
           HttpStatus.BAD_REQUEST,
         );
-        expect(error.message).toBe("Blog id is invalid");
+        expect(error.message).toBe("Post id is invalid");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a blog by title", async () => {
+  it("Get a post by title", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_TITLE,
+        query: GET_POST_BY_TITLE,
         variables: {
-          title: blog.title,
+          title: post.title,
         },
       })
       .expect(200)
       .then((res) => {
-        const { blogByTitle } = res.body.data;
+        const { postByTitle } = res.body.data;
 
-        expect(blogByTitle.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogByTitle.message).toBe("Blog found");
+        expect(postByTitle.statusCode).toBe(HttpStatus.FOUND);
+        expect(postByTitle.message).toBe("post found");
 
-        expect(blogByTitle).toBeDefined();
-        expect(blogByTitle.title).toBe(blog.title);
-        expect(blogByTitle.content).toBe(blog.content);
-        expect(blogByTitle.image).toBe(blog.image);
-        expect(blogByTitle.category).toBe(blog.category);
-        expect(blogByTitle.author).toBe(blog.author);
+        expect(postByTitle).toBeDefined();
+        expect(postByTitle.title).toBe(post.title);
+        expect(postByTitle.content).toBe(post.content);
+        expect(postByTitle.image).toBe(post.image);
+        expect(postByTitle.category).toBe(post.category);
+        expect(postByTitle.author).toBe(post.author);
       });
   });
 
-  it("Get a blog by empty title", async () => {
+  it("Get a post by empty title", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_TITLE,
+        query: GET_POST_BY_TITLE,
         variables: {
           title: "",
         },
@@ -343,18 +326,18 @@ describe("Blogs (e2e)", () => {
         expect(error.extensions.response.statusCode).toBe(
           HttpStatus.BAD_REQUEST,
         );
-        expect(error.message).toBe("Blog title is required");
+        expect(error.message).toBe("Post title is required");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a blog by invalid title", async () => {
+  it("Get a Post by invalid title", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_TITLE,
+        query: GET_POST_BY_TITLE,
         variables: {
-          title: blog.title,
+          title: post.title,
         },
       })
       .expect(200)
@@ -364,41 +347,41 @@ describe("Blogs (e2e)", () => {
         expect(error.extensions.response.statusCode).toBe(
           HttpStatus.BAD_REQUEST,
         );
-        expect(error.message).toBe("Blog title is invalid");
+        expect(error.message).toBe("Post title is invalid");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a blog by slug", async () => {
+  it("Get a post by slug", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_SLUG,
+        query: GET_POST_BY_SLUG,
         variables: {
-          slug: blog.slug,
+          slug: post.slug,
         },
       })
       .expect(200)
       .then((res) => {
-        const { blogBySlug } = res.body.data;
+        const { postBySlug } = res.body.data;
 
-        expect(blogBySlug.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogBySlug.message).toBe("Blog found");
+        expect(postBySlug.statusCode).toBe(HttpStatus.FOUND);
+        expect(postBySlug.message).toBe("post found");
 
-        expect(blogBySlug).toBeDefined();
-        expect(blogBySlug.title).toBe(blog.title);
-        expect(blogBySlug.content).toBe(blog.content);
-        expect(blogBySlug.image).toBe(blog.image);
-        expect(blogBySlug.category).toBe(blog.category);
-        expect(blogBySlug.author).toBe(blog.author);
+        expect(postBySlug).toBeDefined();
+        expect(postBySlug.title).toBe(post.title);
+        expect(postBySlug.content).toBe(post.content);
+        expect(postBySlug.image).toBe(post.image);
+        expect(postBySlug.category).toBe(post.category);
+        expect(postBySlug.author).toBe(post.author);
       });
   });
 
-  it("Get a blog by empty slug", async () => {
+  it("Get a post by empty slug", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_SLUG,
+        query: GET_POST_BY_SLUG,
         variables: {
           slug: "",
         },
@@ -410,18 +393,18 @@ describe("Blogs (e2e)", () => {
         expect(error.extensions.response.statusCode).toBe(
           HttpStatus.BAD_REQUEST,
         );
-        expect(error.message).toBe("Blog slug is required");
+        expect(error.message).toBe("Post slug is required");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a blog by invalid slug", async () => {
+  it("Get a post by invalid slug", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOG_BY_SLUG,
+        query: GET_POST_BY_SLUG,
         variables: {
-          slug: `${blog.slug}invalid`,
+          slug: `${post.slug}invalid`,
         },
       })
       .expect(200)
@@ -429,41 +412,41 @@ describe("Blogs (e2e)", () => {
         const error = res.body.errors[0];
 
         expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("Blog not found");
+        expect(error.message).toBe("Post not found");
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get blogs by category", async () => {
+  it("Get posts by category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_CATEGORY,
+        query: GET_POSTS_BY_CATEGORY,
         variables: {
-          category: blog.category,
+          category: post.category,
         },
       })
       .expect(200)
       .then((res) => {
-        const { blogByCategory } = res.body.data;
+        const { postByCategory } = res.body.data;
 
-        expect(blogByCategory.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogByCategory.message).toBe("Blog found");
+        expect(postByCategory.statusCode).toBe(HttpStatus.FOUND);
+        expect(postByCategory.message).toBe("post found");
 
-        expect(blogByCategory).toBeDefined();
-        expect(blogByCategory.title).toBe(blog.title);
-        expect(blogByCategory.content).toBe(blog.content);
-        expect(blogByCategory.image).toBe(blog.image);
-        expect(blogByCategory.category).toBe(blog.category);
-        expect(blogByCategory.author).toBe(blog.author);
+        expect(postByCategory).toBeDefined();
+        expect(postByCategory.title).toBe(post.title);
+        expect(postByCategory.content).toBe(post.content);
+        expect(postByCategory.image).toBe(post.image);
+        expect(postByCategory.category).toBe(post.category);
+        expect(postByCategory.author).toBe(post.author);
       });
   });
 
-  it("Get blogs by empty category", async () => {
+  it("Get posts by empty category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_CATEGORY,
+        query: GET_POSTS_BY_CATEGORY,
         variables: {
           category: "",
         },
@@ -480,13 +463,13 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by invalid category", async () => {
+  it("Get posts by invalid category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_CATEGORY,
+        query: GET_POSTS_BY_CATEGORY,
         variables: {
-          category: `${blog.category}invalid`,
+          category: `${post.category}invalid`,
         },
       })
       .expect(200)
@@ -501,32 +484,32 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by author", async () => {
+  it("Get posts by author", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR,
+        query: GET_POSTS_BY_AUTHOR,
         variables: {
           author: author._id,
         },
       })
       .expect(200)
       .then((res) => {
-        const { blogsByAuthor } = res.body.data;
+        const { postsByAuthor } = res.body.data;
 
-        expect(blogsByAuthor.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogsByAuthor.message).toBe("Blogs found");
+        expect(postsByAuthor.statusCode).toBe(HttpStatus.FOUND);
+        expect(postsByAuthor.message).toBe("posts found");
 
-        expect(blogsByAuthor).toBeDefined();
-        expect(blogsByAuthor.length).toBeGreaterThan(0);
+        expect(postsByAuthor).toBeDefined();
+        expect(postsByAuthor.length).toBeGreaterThan(0);
       });
   });
 
-  it("Get blogs by empty author", async () => {
+  it("Get posts by empty author", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR,
+        query: GET_POSTS_BY_AUTHOR,
         variables: {
           author: "",
         },
@@ -543,11 +526,11 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by invalid author", async () => {
+  it("Get posts by invalid author", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR,
+        query: GET_POSTS_BY_AUTHOR,
         variables: {
           author: `${author._id}invalid`,
         },
@@ -564,11 +547,11 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by author and category", async () => {
+  it("Get posts by author and category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
+        query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: author._id,
           category: category._id,
@@ -576,21 +559,21 @@ describe("Blogs (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const { blogsByAuthorAndCategory } = res.body.data;
+        const { postsByAuthorAndCategory } = res.body.data;
 
-        expect(blogsByAuthorAndCategory.statusCode).toBe(HttpStatus.FOUND);
-        expect(blogsByAuthorAndCategory.message).toBe("Blogs found");
+        expect(postsByAuthorAndCategory.statusCode).toBe(HttpStatus.FOUND);
+        expect(postsByAuthorAndCategory.message).toBe("posts found");
 
-        expect(blogsByAuthorAndCategory).toBeDefined();
-        expect(blogsByAuthorAndCategory.length).toBeGreaterThan(0);
+        expect(postsByAuthorAndCategory).toBeDefined();
+        expect(postsByAuthorAndCategory.length).toBeGreaterThan(0);
       });
   });
 
-  it("Get blogs by empty author and category", async () => {
+  it("Get posts by empty author and category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
+        query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: "",
           category: category._id,
@@ -608,11 +591,11 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by author and empty category", async () => {
+  it("Get posts by author and empty category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
+        query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: author._id,
           category: "",
@@ -630,11 +613,11 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by invalid author and category", async () => {
+  it("Get posts by invalid author and category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
+        query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: `${author._id}invalid`,
           category: category._id,
@@ -652,11 +635,11 @@ describe("Blogs (e2e)", () => {
       });
   });
 
-  it("Get blogs by author and invalid category", async () => {
+  it("Get posts by author and invalid category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
-        query: GET_BLOGS_BY_AUTHOR_AND_CATEGORY,
+        query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: author._id,
           category: `${category._id}invalid`,
