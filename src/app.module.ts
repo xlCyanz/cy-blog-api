@@ -3,13 +3,13 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
-import { UsersModule } from "./users/users.module";
-import { BlogsModule } from "./blogs/blogs.module";
-import { ConfigModule } from "./config/config.module";
+import { PostsModule } from "@posts/posts.module";
+import { UsersModule } from "@users/users.module";
+import { ConfigModule } from "@config/config.module";
+import { ConfigService } from "@config/config.service";
+import { CategoriesModule } from "@categories/categories.module";
+
 import { AppController } from "./app.controller";
-import { ConfigService } from "./config/config.service";
-import { CategoriesModule } from "./categories/categories.module";
-import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -26,7 +26,6 @@ import { PostsModule } from './posts/posts.module';
     }),
     UsersModule,
     CategoriesModule,
-    BlogsModule,
     PostsModule,
   ],
   controllers: [AppController],
