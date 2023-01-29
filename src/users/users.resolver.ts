@@ -5,17 +5,21 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 
-import { User } from "./entities/user.entity";
-import { UsersService } from "./users.service";
-import { ResponseUser } from "./dto/response.user";
-import { CreateUserInput } from "./dto/create-user.input";
-import { UpdateUserInput } from "./dto/update-user.input";
-import { MessageCode, Response } from "../interfaces";
-import { validationUser, validationUserEmail } from "../utils/users.yup";
+import { MessageCode, Response } from "@interfaces";
+
+import User from "./entities/user.entity";
+import UsersYup from "./users.yup";
+import UsersService from "./users.service";
+import ResponseUser from "./dto/response.user";
+import CreateUserInput from "./dto/create-user.input";
+import UpdateUserInput from "./dto/update-user.input";
 
 @Resolver(() => User)
-export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+export default class UsersResolver {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersYup: UsersYup,
+  ) {}
 
   @Query(() => ResponseUser, { name: "user" })
   async findById(
@@ -56,7 +60,7 @@ export class UsersResolver {
     }
 
     try {
-      const validateEmail = validationUserEmail(email);
+      const validateEmail = this.usersYup.validationUserEmail(email);
       const userByEmail = await this.usersService.findByEmail(validateEmail);
 
       if (!userByEmail) {
@@ -84,7 +88,7 @@ export class UsersResolver {
     @Args("input") input: CreateUserInput,
   ): Promise<Response<User>> {
     try {
-      const validateUser = validationUser(input);
+      const validateUser = this.usersYup.validationUser(input);
       const userCreated = await this.usersService.create(validateUser);
 
       return {

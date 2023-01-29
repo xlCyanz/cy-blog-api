@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
 
-import MongooseUtils from "../utils/mongoose-utils";
-import { UsersMapper } from "./users.mapper";
-import { MessageCode } from "../interfaces";
-import { UsersRepository } from "./users.repository";
-import { CreateUserInput } from "./dto/create-user.input";
-import { UpdateUserInput } from "./dto/update-user.input";
+import MongooseUtils from "@utils/mongoose-utils";
+import { MessageCode } from "@interfaces";
+
+import UsersMapper from "./users.mapper";
+import UsersRepository from "./users.repository";
+import CreateUserInput from "./dto/create-user.input";
+import UpdateUserInput from "./dto/update-user.input";
 
 @Injectable()
-export class UsersService {
+export default class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private usersMapper: UsersMapper,

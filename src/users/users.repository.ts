@@ -2,11 +2,12 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
 
-import { MessageCode } from "../interfaces";
-import { User, UserDocument } from "./entities/user.entity";
+import { MessageCode } from "@interfaces";
+
+import User, { UserDocument } from "./entities/user.entity";
 
 @Injectable()
-export class UsersRepository {
+export default class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async findById(id: Types.ObjectId): Promise<User> {
