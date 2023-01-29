@@ -3,8 +3,8 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
+import UsersModule from "@users/users.module";
 import { PostsModule } from "@posts/posts.module";
-import { UsersModule } from "@users/users.module";
 import { ConfigModule } from "@config/config.module";
 import { ConfigService } from "@config/config.service";
 import { CategoriesModule } from "@categories/categories.module";
