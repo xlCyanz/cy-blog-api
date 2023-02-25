@@ -1,8 +1,8 @@
+import * as R from "radash";
 import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
-import Utilities from "../../src/utils/utilities";
 import FakeUtils from "../../src/utils/fake-utils";
 import { AppModule } from "../../src/app.module";
 import { ICategory, MessageCode } from "../../src/interfaces";
@@ -32,16 +32,11 @@ describe("Categories (e2e)", () => {
 
   const faker = new FakeUtils();
 
-  const category = (() =>
-    Utilities.omitFromObjectProperties<ICategory>(faker.getCategory(), [
-      "_id",
-    ]))();
+  const category = R.omit(faker.getCategory(), ["_id"]);
 
   const categoryUpdated: ICategory = {
     _id: null,
-    ...(Utilities.omitFromObjectProperties<ICategory>(faker.getCategory(), [
-      "_id",
-    ]) as unknown as ICategory),
+    ...category,
   };
 
   it("No query test should have typename", async () => {

@@ -1,9 +1,9 @@
+import * as R from "radash";
 import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import FakeUtils from "../../src/utils/fake-utils";
-import Utilities from "../../src/utils/utilities";
 import { AppModule } from "../../src/app.module";
 import { IUser, MessageCode } from "../../src/interfaces";
 import {
@@ -32,20 +32,16 @@ describe("Users (e2e)", () => {
 
   const faker = new FakeUtils();
 
-  const user = (() =>
-    Utilities.omitFromObjectProperties<IUser>(faker.getUser(), [
-      "_id",
-      "role",
-    ]))();
+  const user = R.omit(faker.getUser(), [
+    "_id",
+    "role",
+    "password",
+    "comparePassword",
+  ]);
 
   const updatedUser: IUser = {
     _id: null,
-    ...(Utilities.omitFromObjectProperties<IUser>(faker.getUser(), [
-      "password",
-      "comparePassword",
-      "email",
-      "role",
-    ]) as unknown as IUser),
+    ...user,
   };
 
   it("No query test should have typename", async () => {
