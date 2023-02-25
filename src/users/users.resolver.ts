@@ -114,13 +114,19 @@ export default class UsersResolver {
       });
     }
 
-    const userUpdated = await this.usersService.update(updateUserInput);
+    try {
+      const userUpdated = await this.usersService.update(updateUserInput);
 
-    return {
-      statusCode: HttpStatus.OK,
-      messageCode: MessageCode.USER_UPDATED,
-      data: userUpdated,
-    };
+      return {
+        statusCode: HttpStatus.OK,
+        messageCode: MessageCode.USER_UPDATED,
+        data: userUpdated,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        ...error.response,
+      });
+    }
   }
 
   @Mutation(() => ResponseUser)

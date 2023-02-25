@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import { ObjectType, Field } from "@nestjs/graphql";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import { User } from "../../users/entities/user.entity";
+import User from "../../users/entities/user.entity";
 import { Category } from "../../categories/entities/category.entity";
 
 @ObjectType({ description: "Post entity" })

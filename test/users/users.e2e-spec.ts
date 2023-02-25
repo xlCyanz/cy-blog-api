@@ -5,7 +5,7 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import FakeUtils from "../../src/utils/fake-utils";
 import { AppModule } from "../../src/app.module";
-import { IUser, MessageCode } from "../../src/interfaces";
+import { IUpdateUser, MessageCode } from "../../src/interfaces";
 import {
   CREATE_USER,
   REMOVE_USER,
@@ -32,16 +32,11 @@ describe("Users (e2e)", () => {
 
   const faker = new FakeUtils();
 
-  const user = R.omit(faker.getUser(), [
-    "_id",
-    "role",
-    "password",
-    "comparePassword",
-  ]);
+  const user = R.omit(faker.getUser(), ["_id", "role"]);
 
-  const updatedUser: IUser = {
+  const updatedUser: IUpdateUser = {
     _id: null,
-    ...user,
+    ...R.omit(user, ["email", "password"]),
   };
 
   it("No query test should have typename", async () => {
