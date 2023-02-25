@@ -14,7 +14,7 @@ export class CategoriesService {
     private categoriesMapper: CategoriesMapper,
   ) {}
 
-  private exceptionMessageInvalid = "Category id is invalid";
+  private exceptionMessageInvalid = MessageCode.CATEGORY_ID_INVALID;
 
   findAll() {
     return this.categoriesRepository.findAll();

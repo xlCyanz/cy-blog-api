@@ -11,15 +11,15 @@ export class Category {
   @Field(() => String, { description: "Category name" })
   @Prop({
     required: true,
+    index: true,
     message: "Category name is required",
+    unique: true,
   })
   name: string;
 
   @Field(() => String, { description: "Category description", nullable: true })
   @Prop({
     required: false,
-    index: true,
-    unique: true,
     message: "Category description is required",
   })
   description: string;

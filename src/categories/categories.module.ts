@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+
+import CategoriesYup from "./categories.yup";
 import { CategoriesMapper } from "./categories.mapper";
 import { CategoriesService } from "./categories.service";
 import { CategoriesResolver } from "./categories.resolver";
@@ -17,6 +19,7 @@ import { Category, CategorySchema } from "./entities/category.entity";
     CategoriesService,
     CategoriesRepository,
     CategoriesMapper,
+    CategoriesYup,
   ],
 })
 export class CategoriesModule {}

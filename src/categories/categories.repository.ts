@@ -28,7 +28,6 @@ export class CategoriesRepository {
       return await this.categoryModel.create(newCategory);
     } catch (error) {
       if (error.code === 11000) {
-        console.log("category_already");
         throw new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
           messageCode: MessageCode.CATEGORY_ALREADY_EXISTS,

@@ -75,8 +75,8 @@ mutation CREATE_CATEGORY($name: String!, $description: String) {
 
 export const UPDATE_CATEGORY = `
 ${FRAGMENT_RESPONSE_CATEGORY}
-mutation UPDATE_CATEGORY($id: String!, $name: String, $description: String) {
-  updateCategory(input: { _id: $id, name: $name, description: $description }) {
+mutation UPDATE_CATEGORY($_id: String!, $name: String, $description: String) {
+  updateCategory(input: { _id: $_id, name: $name, description: $description }) {
     ...ResponseCategory
   }
 }

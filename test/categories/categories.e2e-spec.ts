@@ -140,7 +140,6 @@ describe("Categories (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        console.log(res.body.errors);
         const error = res.body.errors[0].extensions.response;
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -205,115 +204,120 @@ describe("Categories (e2e)", () => {
         expect(res.body.data).toBeNull();
       }));
 
-  // it("Update a category", async () => {
-  //   const newCategory = {
-  //     id: category._id,
-  //     name: "Test Category 1 Updated",
-  //     description: "Test Category Description 1 Updated",
-  //   };
+  it("Update a category", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: UPDATE_CATEGORY,
+        variables: {
+          ...categoryUpdated,
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const { updateCategory } = res.body.data;
 
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: UPDATE_CATEGORY,
-  //       variables: {
-  //         ...newCategory,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const { updateCategory } = res.body.data;
+        expect(updateCategory.statusCode).toBe(HttpStatus.OK);
+        expect(updateCategory.messageCode).toBe(MessageCode.CATEGORY_UPDATED);
+        expect(updateCategory.data).toBeDefined();
 
-  //       expect(updateCategory.statusCode).toBe(HttpStatus.OK);
-  //       expect(updateCategory.message).toBe("Category updated");
-  //       expect(updateCategory.data).toBeDefined();
+        expect(updateCategory.data._id).toBeDefined();
+        expect(updateCategory.data.name).toBe(categoryUpdated.name);
+        expect(updateCategory.data.description).toBe(
+          categoryUpdated.description,
+        );
+      });
+  });
 
-  //       expect(updateCategory.data._id).toBeDefined();
-  //       expect(updateCategory.data.name).toBe(newCategory.name);
-  //       expect(updateCategory.data.description).toBe(newCategory.description);
-  //     });
-  // });
+  it("Update a category with empty id", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: UPDATE_CATEGORY,
+        variables: {
+          _id: "",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  // it("Update a category with empty id", async () => {
-  //   const newCategory = {
-  //     id: "",
-  //     name: "Test Category 1 Updated",
-  //     description: "Test Category Description 1 Updated",
-  //   };
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      });
+  });
 
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: UPDATE_CATEGORY,
-  //       variables: {
-  //         ...newCategory,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0];
+  it("Update a category with invalid id", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: UPDATE_CATEGORY,
+        variables: {
+          _id: "yff48q4vmql2323232ng85yphyff48q4vmqloang85yph2442",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.extensions.response.statusCode).toBe(
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //       expect(error.message).toBe("Category id is required");
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
+        expect(res.body.data).toBeNull();
+      });
+  });
 
-  // it("Remove a category", async () =>
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_CATEGORY,
-  //       variables: {
-  //         id: category._id,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const { removeCategory } = res.body.data;
+  it("Remove a category", async () =>
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_CATEGORY,
+        variables: {
+          id: categoryUpdated._id,
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const { removeCategory } = res.body.data;
 
-  //       expect(removeCategory.statusCode).toBe(HttpStatus.OK);
-  //       expect(removeCategory.message).toBe("Category removed");
-  //       expect(removeCategory.data).toBeDefined();
-  //     }));
+        expect(removeCategory.statusCode).toBe(HttpStatus.OK);
+        expect(removeCategory.messageCode).toBe(MessageCode.CATEGORY_REMOVED);
+        expect(removeCategory.data).toBeDefined();
+      }));
 
-  // it("Remove a category with empty id", async () =>
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_CATEGORY,
-  //       variables: {
-  //         id: "",
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0];
+  it("Remove a category with empty id", async () =>
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_CATEGORY,
+        variables: {
+          id: "",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.extensions.response.statusCode).toBe(
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //       expect(error.message).toBe("Category id is required");
-  //       expect(res.body.data).toBeNull();
-  //     }));
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      }));
 
-  // it("Remove a invalid category", async () =>
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: REMOVE_CATEGORY,
-  //       variables: {
-  //         id: category._id,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0];
+  it("Remove a invalid category", async () =>
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: REMOVE_CATEGORY,
+        variables: {
+          id: "28462842698426",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-  //       expect(error.message).toBe("Category not found");
-  //       expect(res.body.data).toBeNull();
-  //     }));
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
+        expect(res.body.data).toBeNull();
+      }));
 });
