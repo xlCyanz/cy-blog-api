@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-import { ICategory, IPost, IUser } from "../interfaces";
+import { ICategory, IPost, IUser } from "@interfaces";
 
 export default class FakeUtils {
   public getUser(): IUser {

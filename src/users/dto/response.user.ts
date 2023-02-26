@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 
 import User from "../entities/user.entity";
-import { BaseResponse } from "../../response.dto";
+import { BaseResponse } from "@/response.dto";
 
 @ObjectType({ description: "User response" })
 export default class ResponseUser extends BaseResponse {

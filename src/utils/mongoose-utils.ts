@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { BadRequestException, HttpStatus } from "@nestjs/common";
 
-import { MessageCode } from "../interfaces";
+import { MessageCode } from "@interfaces";
 
 export default class MongooseUtils {
   /**
