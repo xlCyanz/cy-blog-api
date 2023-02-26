@@ -2,11 +2,12 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Injectable, BadRequestException, HttpStatus } from "@nestjs/common";
 
-import { MessageCode } from "../interfaces";
-import { Category, CategoryDocument } from "./entities/category.entity";
+import { MessageCode } from "@interfaces";
+
+import Category, { CategoryDocument } from "./entities/category.entity";
 
 @Injectable()
-export class CategoriesRepository {
+export default class CategoriesRepository {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
   ) {}

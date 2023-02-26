@@ -11,7 +11,7 @@
     "^@users/(.*)$": "<rootDir>/../src/users/$1",
     "^@categories/(.*)$": "<rootDir>/../src/categories/$1",
     "^@posts/(.*)$": "<rootDir>/../src/posts/$1",
-    "^@utils/(.*)$": "<rootDir>/../src/utils/$1",
+    "^@utils$": "<rootDir>/../src/utils",
     "^@interfaces$": "<rootDir>/../src/interfaces",
     "^@config/(.*)$": "<rootDir>/../src/config/$1"
   }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import MongooseUtils from "@utils/mongoose-utils";
 import { MessageCode } from "@interfaces";
+import { MongooseUtils } from "@utils";
 
 import UsersMapper from "./users.mapper";
 import UsersRepository from "./users.repository";

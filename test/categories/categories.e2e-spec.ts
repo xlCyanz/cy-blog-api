@@ -3,9 +3,10 @@ import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
-import FakeUtils from "../../src/utils/fake-utils";
-import { AppModule } from "../../src/app.module";
-import { ICategory, MessageCode } from "../../src/interfaces";
+import { FakeUtils } from "@utils";
+import { AppModule } from "@/app.module";
+import { IUpdateCategory, MessageCode } from "@interfaces";
+
 import {
   CREATE_CATEGORY,
   REMOVE_CATEGORY,
@@ -34,7 +35,7 @@ describe("Categories (e2e)", () => {
 
   const category = R.omit(faker.getCategory(), ["_id"]);
 
-  const categoryUpdated: ICategory = {
+  const categoryUpdated: IUpdateCategory = {
     _id: null,
     ...category,
   };

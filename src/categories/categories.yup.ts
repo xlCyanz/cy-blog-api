@@ -1,7 +1,8 @@
 import * as yup from "yup";
 
-import { MessageCode } from "../interfaces";
-import { CreateCategoryInput } from "./dto/create-category.input";
+import { MessageCode } from "@interfaces";
+
+import CreateCategoryInput from "./dto/create-category.input";
 
 export default class CategoriesYup {
   validationCategory(category: CreateCategoryInput) {

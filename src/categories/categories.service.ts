@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
 
-import MongooseUtils from "../utils/mongoose-utils";
-import { MessageCode } from "../interfaces";
-import { CategoriesMapper } from "./categories.mapper";
-import { CreateCategoryInput } from "./dto/create-category.input";
-import { UpdateCategoryInput } from "./dto/update-category.input";
-import { CategoriesRepository } from "./categories.repository";
+import { MongooseUtils } from "@utils";
+import { MessageCode } from "@interfaces";
+
+import CategoriesMapper from "./categories.mapper";
+import CreateCategoryInput from "./dto/create-category.input";
+import UpdateCategoryInput from "./dto/update-category.input";
+import CategoriesRepository from "./categories.repository";
 
 @Injectable()
-export class CategoriesService {
+export default class CategoriesService {
   constructor(
     private readonly categoriesRepository: CategoriesRepository,
     private categoriesMapper: CategoriesMapper,

@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 @ObjectType({ description: "Category entity" })
 @Schema({ timestamps: true })
-export class Category {
+export default class Category {
   @Field(() => String, { description: "Category identifier" })
   _id: Types.ObjectId | string;
 

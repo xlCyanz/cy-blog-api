@@ -1,7 +1,7 @@
 import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
-export class CreateCategoryInput {
+export default class CreateCategoryInput {
   @Field(() => String, { nullable: false })
   name: string;
 

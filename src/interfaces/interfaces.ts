@@ -1,8 +1,10 @@
 import User from "../users/entities/user.entity";
-import { Post } from "../posts/entities/post.entity";
-import { Category } from "../categories/entities/category.entity";
-import { MessageCode } from "./message-code";
+import Category from "../categories/entities/category.entity";
 import UpdateUserInput from "../users/dto/update-user.input";
+import UpdateCategoryInput from "../categories/dto/update-category.input";
+
+import { Post } from "../posts/entities/post.entity";
+import { MessageCode } from "./message-code";
 
 export interface Response<T> {
   statusCode: number;
@@ -15,5 +17,6 @@ export type IUser = User;
 export type IUpdateUser = UpdateUserInput;
 
 export type ICategory = Category;
+export type IUpdateCategory = UpdateCategoryInput;
 
 export type IPost = Post;

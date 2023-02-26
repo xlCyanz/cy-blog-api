@@ -6,17 +6,17 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 
-import CategoriesYup from "./categories.yup";
+import { MessageCode, Response } from "@interfaces";
 
-import { Category } from "./entities/category.entity";
-import { CategoriesService } from "./categories.service";
-import { CreateCategoryInput } from "./dto/create-category.input";
-import { UpdateCategoryInput } from "./dto/update-category.input";
-import { MessageCode, Response } from "../interfaces";
+import Category from "./entities/category.entity";
+import CategoriesYup from "./categories.yup";
+import CategoriesService from "./categories.service";
+import CreateCategoryInput from "./dto/create-category.input";
+import UpdateCategoryInput from "./dto/update-category.input";
 import { ResponseCategories, ResponseCategory } from "./dto/response.category";
 
 @Resolver(() => Category)
-export class CategoriesResolver {
+export default class CategoriesResolver {
   constructor(
     private readonly categoriesService: CategoriesService,
     private readonly categoriesYup: CategoriesYup,

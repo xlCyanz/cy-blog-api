@@ -1,6 +1,7 @@
-import { Category } from "../entities/category.entity";
-import { BaseResponse } from "../../response.dto";
 import { Field, ObjectType } from "@nestjs/graphql";
+
+import Category from "../entities/category.entity";
+import { BaseResponse } from "../../response.dto";
 
 @ObjectType({ description: "Category response" })
 export class ResponseCategory extends BaseResponse {

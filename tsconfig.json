@@ -22,7 +22,7 @@
       "@users/*": ["src/users/*"],
       "@categories/*": ["src/categories/*"],
       "@posts/*": ["src/posts/*"],
-      "@utils/*": ["src/utils/*"],
+      "@utils": ["src/utils"],
       "@interfaces": ["src/interfaces"],
       "@config/*": ["src/config/*"],
     }
