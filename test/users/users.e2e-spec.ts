@@ -3,9 +3,10 @@ import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
-import FakeUtils from "../../src/utils/fake-utils";
-import { AppModule } from "../../src/app.module";
-import { IUpdateUser, MessageCode } from "../../src/interfaces";
+import { FakeUtils } from "@utils";
+import { AppModule } from "@/app.module";
+import { IUpdateUser, MessageCode } from "@interfaces";
+
 import {
   CREATE_USER,
   REMOVE_USER,
@@ -18,18 +19,6 @@ import {
 describe("Users (e2e)", () => {
   let app: INestApplication;
   const path = "/graphql";
-
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  afterEach(async () => await app.close());
-
   const faker = new FakeUtils();
 
   const user = R.omit(faker.getUser(), ["_id", "role"]);
@@ -38,6 +27,17 @@ describe("Users (e2e)", () => {
     _id: null,
     ...R.omit(user, ["email", "password"]),
   };
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => await app.close());
 
   it("No query test should have typename", async () => {
     expect(CREATE_USER.includes("typename")).toBe(false);

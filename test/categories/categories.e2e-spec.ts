@@ -19,18 +19,6 @@ import {
 describe("Categories (e2e)", () => {
   let app: INestApplication;
   const path = "/graphql";
-
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  afterEach(async () => await app.close());
-
   const faker = new FakeUtils();
 
   const category = R.omit(faker.getCategory(), ["_id"]);
@@ -40,7 +28,18 @@ describe("Categories (e2e)", () => {
     ...category,
   };
 
-  it("No query test should have typename", async () => {
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => await app.close());
+
+  it("Query tests should not have a typename", async () => {
     expect(CREATE_CATEGORY.includes("typename")).toBe(false);
     expect(REMOVE_CATEGORY.includes("typename")).toBe(false);
     expect(UPDATE_CATEGORY.includes("typename")).toBe(false);

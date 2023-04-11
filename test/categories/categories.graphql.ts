@@ -1,5 +1,5 @@
 /**
- * Fragmentes
+ * Fragments
  */
 const FRAGMENT_CATEGORY = `
 fragment Category on Category {

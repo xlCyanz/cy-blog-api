@@ -2,8 +2,9 @@ import * as request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
-import FakeUtils from "../../src/utils/fake-utils";
-import { AppModule } from "../../src/app.module";
+import { FakeUtils } from "@utils";
+import { AppModule } from "@/app.module";
+
 import { CREATE_USER } from "../users/users.graphql";
 import { CREATE_CATEGORY } from "../categories/categories.graphql";
 import {
