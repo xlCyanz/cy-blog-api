@@ -4,6 +4,7 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import { FakeUtils } from "@utils";
 import { AppModule } from "@/app.module";
+import { MessageCode } from "@interfaces";
 
 import { CREATE_USER } from "../users/users.graphql";
 import { CREATE_CATEGORY } from "../categories/categories.graphql";
@@ -30,7 +31,7 @@ describe("Posts (e2e)", () => {
   const category = faker.getCategory();
   const author = faker.getUser();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -39,7 +40,7 @@ describe("Posts (e2e)", () => {
     await app.init();
   });
 
-  afterEach(async () => await app.close());
+  afterAll(async () => await app.close());
 
   it("No query test should have typename", async () => {
     expect(GET_POSTS.includes("typename")).toBe(false);
@@ -63,8 +64,7 @@ describe("Posts (e2e)", () => {
       .send({
         query: CREATE_CATEGORY,
         variables: {
-          name: category.name,
-          description: category.description,
+          ...category,
         },
       })
       .expect(200)
@@ -72,11 +72,11 @@ describe("Posts (e2e)", () => {
         const { createCategory } = res.body.data;
 
         expect(createCategory.statusCode).toBe(HttpStatus.CREATED);
-        expect(createCategory.message).toBe("Category created");
-
-        expect(createCategory).toBeDefined();
-        expect(createCategory.name).toBe(category.name);
-        expect(createCategory.description).toBe(category.description);
+        expect(createCategory.messageCode).toBe(MessageCode.CATEGORY_CREATED);
+        expect(createCategory.data).toBeDefined();
+        expect(createCategory.data._id).toBeDefined();
+        expect(createCategory.data.name).toBe(category.name);
+        expect(createCategory.data.description).toBe(category.description);
 
         post.category = createCategory._id;
         category._id = createCategory._id;
@@ -90,11 +90,9 @@ describe("Posts (e2e)", () => {
       .send({
         query: CREATE_USER,
         variables: {
-          firstname: author.firstname,
-          lastname: author.lastname,
-          password: author.password,
-          email: author.email,
-          avatar: author.avatar,
+          input: {
+            ...author,
+          },
         },
       })
       .expect(200)
@@ -102,7 +100,8 @@ describe("Posts (e2e)", () => {
         const { createUser } = res.body.data;
 
         expect(createUser.statusCode).toBe(HttpStatus.CREATED);
-        expect(createUser.message).toBe("User created");
+        expect(createUser.messageCode).toBe(MessageCode.USER_CREATED);
+        expect(createUser.data).toBeDefined();
 
         expect(createUser).toBeDefined();
         expect(createUser.firstname).toBe(author.firstname);
@@ -125,11 +124,7 @@ describe("Posts (e2e)", () => {
       .send({
         query: CREATE_POST,
         variables: {
-          title: post.title,
-          content: post.content,
-          image: post.image,
-          categoryId: post.category,
-          authorId: post.author,
+          ...post,
         },
       })
       .expect(200)
@@ -137,14 +132,14 @@ describe("Posts (e2e)", () => {
         const { createPost } = res.body.data;
 
         expect(createPost.statusCode).toBe(HttpStatus.CREATED);
-        expect(createPost.message).toBe("Post created");
+        expect(createPost.messageCode).toBe(MessageCode.POST_CREATED);
+        expect(createPost.data).toBeDefined();
 
-        expect(createPost).toBeDefined();
-        expect(createPost.title).toBe(post.title);
-        expect(createPost.content).toBe(post.content);
-        expect(createPost.image).toBe(post.image);
-        expect(createPost.category).toBe(post.category);
-        expect(createPost.author).toBe(post.author);
+        expect(createPost.data.title).toBe(post.title);
+        expect(createPost.data.content).toBe(post.content);
+        expect(createPost.data.image).toBe(post.image);
+        expect(createPost.data.category).toBe(post.category);
+        expect(createPost.data.author).toBe(post.author);
 
         post._id = createPost._id;
         post.slug = createPost.slug;
@@ -154,25 +149,41 @@ describe("Posts (e2e)", () => {
       });
   });
 
+  it("Create a duplicate post", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: CREATE_POST,
+        variables: {
+          ...post,
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
+
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_ALREADY_EXISTS);
+        expect(res.body.data).toBeNull();
+      });
+  });
+
   it("Create a post with invalid category", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
         query: CREATE_POST,
         variables: {
-          title: post.title,
-          content: post.content,
-          image: post.image,
+          ...post,
           category: "invalid",
-          author: post.author,
         },
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("Category not found");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -183,19 +194,16 @@ describe("Posts (e2e)", () => {
       .send({
         query: CREATE_POST,
         variables: {
-          title: post.title,
-          content: post.content,
-          image: post.image,
-          category: post.category,
+          ...post,
           author: "invalid",
         },
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("Author not found");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -211,7 +219,7 @@ describe("Posts (e2e)", () => {
         const { posts } = res.body.data;
 
         expect(posts.statusCode).toBe(HttpStatus.FOUND);
-        expect(posts.message).toBe("posts found");
+        expect(posts.messageCode).toBe(MessageCode.POSTS_FOUND);
 
         expect(posts).toBeDefined();
         expect(posts.length).toBeGreaterThan(0);
@@ -232,7 +240,7 @@ describe("Posts (e2e)", () => {
         const { post } = res.body.data;
 
         expect(post.statusCode).toBe(HttpStatus.FOUND);
-        expect(post.message).toBe("post found");
+        expect(post.messageCode).toBe(MessageCode.POST_FOUND);
 
         expect(post).toBeDefined();
         expect(post.title).toBe(post.title);
@@ -255,12 +263,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("post id is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_ID_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -276,12 +282,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Post id is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -300,7 +304,7 @@ describe("Posts (e2e)", () => {
         const { postByTitle } = res.body.data;
 
         expect(postByTitle.statusCode).toBe(HttpStatus.FOUND);
-        expect(postByTitle.message).toBe("post found");
+        expect(postByTitle.messageCode).toBe(MessageCode.POST_FOUND);
 
         expect(postByTitle).toBeDefined();
         expect(postByTitle.title).toBe(post.title);
@@ -322,17 +326,15 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Post title is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_TITLE_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
 
-  it("Get a Post by invalid title", async () => {
+  it("Get a post by invalid title", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
@@ -343,12 +345,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Post title is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_TITLE_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -367,7 +367,7 @@ describe("Posts (e2e)", () => {
         const { postBySlug } = res.body.data;
 
         expect(postBySlug.statusCode).toBe(HttpStatus.FOUND);
-        expect(postBySlug.message).toBe("post found");
+        expect(postBySlug.messageCode).toBe(MessageCode.POST_FOUND);
 
         expect(postBySlug).toBeDefined();
         expect(postBySlug.title).toBe(post.title);
@@ -389,12 +389,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Post slug is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_SLUG_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -410,10 +408,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(HttpStatus.NOT_FOUND);
-        expect(error.message).toBe("Post not found");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.POST_SLUG_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -432,7 +430,7 @@ describe("Posts (e2e)", () => {
         const { postByCategory } = res.body.data;
 
         expect(postByCategory.statusCode).toBe(HttpStatus.FOUND);
-        expect(postByCategory.message).toBe("post found");
+        expect(postByCategory.messageCode).toBe(MessageCode.POSTS_FOUND);
 
         expect(postByCategory).toBeDefined();
         expect(postByCategory.title).toBe(post.title);
@@ -454,12 +452,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Category id is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -475,12 +471,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Category id is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -499,7 +493,7 @@ describe("Posts (e2e)", () => {
         const { postsByAuthor } = res.body.data;
 
         expect(postsByAuthor.statusCode).toBe(HttpStatus.FOUND);
-        expect(postsByAuthor.message).toBe("posts found");
+        expect(postsByAuthor.messageCode).toBe(MessageCode.POSTS_FOUND);
 
         expect(postsByAuthor).toBeDefined();
         expect(postsByAuthor.length).toBeGreaterThan(0);
@@ -517,12 +511,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Author id is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -538,12 +530,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Author id is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -563,7 +553,9 @@ describe("Posts (e2e)", () => {
         const { postsByAuthorAndCategory } = res.body.data;
 
         expect(postsByAuthorAndCategory.statusCode).toBe(HttpStatus.FOUND);
-        expect(postsByAuthorAndCategory.message).toBe("posts found");
+        expect(postsByAuthorAndCategory.messageCode).toBe(
+          MessageCode.POSTS_FOUND,
+        );
 
         expect(postsByAuthorAndCategory).toBeDefined();
         expect(postsByAuthorAndCategory.length).toBeGreaterThan(0);
@@ -582,12 +574,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Author id is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -604,12 +594,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Category id is required");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
         expect(res.body.data).toBeNull();
       });
   });
@@ -626,12 +614,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Author id is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -648,12 +634,10 @@ describe("Posts (e2e)", () => {
       })
       .expect(200)
       .then((res) => {
-        const error = res.body.errors[0];
+        const error = res.body.errors[0].extensions.response;
 
-        expect(error.extensions.response.statusCode).toBe(
-          HttpStatus.BAD_REQUEST,
-        );
-        expect(error.message).toBe("Category id is invalid");
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
