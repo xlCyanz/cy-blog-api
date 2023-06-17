@@ -6,12 +6,11 @@ import CreateCategoryInput from "./dto/create-category.input";
 
 export default class CategoriesYup {
   validationCategory(category: CreateCategoryInput) {
-    const { CATEGORY_NAME_REQUIRED, CATEGORY_DESCRIPTION_REQUIRED } =
-      MessageCode;
+    const { CATEGORY_NAME_REQUIRED } = MessageCode;
 
     const categorySchema = yup.object({
       name: yup.string().required(CATEGORY_NAME_REQUIRED),
-      description: yup.string().required(CATEGORY_DESCRIPTION_REQUIRED),
+      description: yup.string(),
     });
 
     return categorySchema.validateSync(category);
