@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { MongooseModuleOptions } from "@nestjs/mongoose";
 
 @Injectable()
 export class ConfigService {
@@ -11,14 +10,6 @@ export class ConfigService {
 
   public get(key: string): string {
     return this.envConfig[key];
-  }
-
-  public getMongoConfig(): MongooseModuleOptions {
-    return {
-      uri: this.get("MONGO_URI"),
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
   }
 
   public getPort(): number {

@@ -79,7 +79,7 @@ describe("Posts (e2e)", () => {
         expect(createCategory.data.description).toBe(category.description);
 
         post.category = createCategory._id;
-        category._id = createCategory._id;
+        category.id = createCategory.id;
 
         expect(post.category).toBeDefined();
         expect(post.category).not.toBeNull();
@@ -545,7 +545,7 @@ describe("Posts (e2e)", () => {
         query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: author._id,
-          category: category._id,
+          category: category.id,
         },
       })
       .expect(200)
@@ -569,7 +569,7 @@ describe("Posts (e2e)", () => {
         query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: "",
-          category: category._id,
+          category: category.id,
         },
       })
       .expect(200)
@@ -609,7 +609,7 @@ describe("Posts (e2e)", () => {
         query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: `${author._id}invalid`,
-          category: category._id,
+          category: category.id,
         },
       })
       .expect(200)
@@ -629,7 +629,7 @@ describe("Posts (e2e)", () => {
         query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
         variables: {
           author: author._id,
-          category: `${category._id}invalid`,
+          category: `${category.id}invalid`,
         },
       })
       .expect(200)

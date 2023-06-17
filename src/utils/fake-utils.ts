@@ -24,7 +24,7 @@ export default class FakeUtils {
 
   public getCategory(): ICategory {
     return {
-      _id: null,
+      id: null,
       name: faker.company.name(),
       description: faker.lorem.paragraph(3),
     };

@@ -17,13 +17,3 @@ export default class CategoriesYup {
     return categorySchema.validateSync(category);
   }
 }
-
-// const validationUserEmail = (email: string) => {
-//   const { USER_MAIL_INVALID, USER_MAIL_REQUIRED } = MessageCode;
-
-//   const userEmailSchema = yup.object({
-//     email: yup.string().email(USER_MAIL_INVALID).required(USER_MAIL_REQUIRED),
-//   });
-
-//   return userEmailSchema.validateSync({ email }).email;
-// };

@@ -1,58 +1,48 @@
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { Injectable, BadRequestException, HttpStatus } from "@nestjs/common";
+import * as R from "radash";
+import { Injectable, BadRequestException } from "@nestjs/common";
 
-import { MessageCode } from "@interfaces";
+import { PrismaService } from "@/prisma/prisma.service";
 
-import Category, { CategoryDocument } from "./entities/category.entity";
+import Category from "./entities/category.entity";
 
 @Injectable()
 export default class CategoriesRepository {
-  constructor(
-    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Category[]> {
-    return await this.categoryModel.find();
+    return await this.prisma.category.findMany();
   }
 
-  async findById(categoryId: Types.ObjectId): Promise<Category> {
-    return await this.categoryModel.findById(categoryId);
+  async findById(categoryId: number): Promise<Category> {
+    return await this.prisma.category.findUnique({ where: { id: categoryId } });
   }
 
   async findByName(categoryName: string): Promise<Category> {
-    return await this.categoryModel.findOne({ name: categoryName });
+    return await this.prisma.category.findUnique({
+      where: { name: categoryName },
+    });
   }
 
   async create(newCategory: Category): Promise<Category> {
     try {
-      return await this.categoryModel.create(newCategory);
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          messageCode: MessageCode.CATEGORY_ALREADY_EXISTS,
-        });
-      } else throw new BadRequestException(error);
-    }
-  }
-
-  async update(
-    categoryId: Types.ObjectId,
-    updateCategory: Category,
-  ): Promise<Category> {
-    try {
-      return await this.categoryModel.findByIdAndUpdate(
-        categoryId,
-        updateCategory,
-        { new: true },
-      );
+      return await this.prisma.category.create({ data: newCategory });
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
-  async remove(categoryId: Types.ObjectId) {
-    return await this.categoryModel.findByIdAndDelete(categoryId);
+  async update(updateCategory: Category): Promise<Category> {
+    try {
+      return await this.prisma.category.update({
+        data: R.omit(updateCategory, ["id", "createdAt", "updatedAt"]),
+        where: { id: updateCategory.id },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async remove(categoryId: number) {
+    return await this.prisma.category.delete({ where: { id: categoryId } });
   }
 }

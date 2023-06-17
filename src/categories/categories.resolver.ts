@@ -42,7 +42,7 @@ export default class CategoriesResolver {
 
   @Query(() => ResponseCategory, { name: "categoryById" })
   async findById(
-    @Args("_id", { type: () => String }) categoryId: string,
+    @Args("id", { type: () => Number }) categoryId: number,
   ): Promise<Response<Category>> {
     if (!categoryId) {
       throw new BadRequestException({
@@ -119,7 +119,7 @@ export default class CategoriesResolver {
   async updateCategory(
     @Args("input") input: UpdateCategoryInput,
   ): Promise<Response<Category>> {
-    if (!input._id) {
+    if (!input.id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         messageCode: MessageCode.CATEGORY_ID_REQUIRED,
@@ -127,10 +127,7 @@ export default class CategoriesResolver {
     }
 
     try {
-      const categoryUpdated = await this.categoriesService.update(
-        input._id,
-        input,
-      );
+      const categoryUpdated = await this.categoriesService.update(input);
 
       return {
         statusCode: HttpStatus.OK,
@@ -146,7 +143,7 @@ export default class CategoriesResolver {
 
   @Mutation(() => ResponseCategory)
   async removeCategory(
-    @Args("_id", { type: () => String }) categoryId: string,
+    @Args("_id", { type: () => Number }) categoryId: number,
   ): Promise<Response<Category>> {
     if (!categoryId) {
       throw new BadRequestException({

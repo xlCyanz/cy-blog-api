@@ -6,6 +6,6 @@ import CreateCategoryInput from "./create-category.input";
 export default class UpdateCategoryInput extends PartialType(
   CreateCategoryInput,
 ) {
-  @Field(() => String)
-  _id: string;
+  @Field(() => Number)
+  id: number;
 }

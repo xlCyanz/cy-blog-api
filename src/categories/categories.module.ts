@@ -1,19 +1,15 @@
 import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
+
+import { PrismaModule } from "@/prisma/prisma.module";
 
 import CategoriesYup from "./categories.yup";
 import CategoriesMapper from "./categories.mapper";
 import CategoriesService from "./categories.service";
 import CategoriesResolver from "./categories.resolver";
 import CategoriesRepository from "./categories.repository";
-import Category, { CategorySchema } from "./entities/category.entity";
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Category.name, schema: CategorySchema },
-    ]),
-  ],
+  imports: [PrismaModule],
   providers: [
     CategoriesResolver,
     CategoriesService,

@@ -21,10 +21,10 @@ describe("Categories (e2e)", () => {
   const path = "/graphql";
   const faker = new FakeUtils();
 
-  const category = R.omit(faker.getCategory(), ["_id"]);
+  const category = R.omit(faker.getCategory(), ["id"]);
 
   const categoryUpdated: IUpdateCategory = {
-    _id: null,
+    id: null,
     ...category,
   };
 
@@ -126,7 +126,7 @@ describe("Categories (e2e)", () => {
         expect(categoryByName.data.name).toBe(category.name);
         expect(categoryByName.data.description).toBe(category.description);
 
-        categoryUpdated._id = categoryByName.data._id;
+        categoryUpdated.id = categoryByName.data.id;
       }));
 
   it("Find a category by empty name", async () =>
@@ -153,7 +153,7 @@ describe("Categories (e2e)", () => {
       .send({
         query: GET_CATEGORY_BY_ID,
         variables: {
-          id: categoryUpdated._id,
+          id: categoryUpdated.id,
         },
       })
       .expect(200)
@@ -163,7 +163,7 @@ describe("Categories (e2e)", () => {
         expect(categoryById.statusCode).toBe(HttpStatus.FOUND);
         expect(categoryById.messageCode).toBe(MessageCode.CATEGORY_FOUND);
 
-        expect(categoryById.data._id).toBeDefined();
+        expect(categoryById.data.id).toBeDefined();
         expect(categoryById.data.name).toBe(category.name);
         expect(categoryById.data.description).toBe(category.description);
       }));
@@ -273,7 +273,7 @@ describe("Categories (e2e)", () => {
       .send({
         query: REMOVE_CATEGORY,
         variables: {
-          id: categoryUpdated._id,
+          id: categoryUpdated.id,
         },
       })
       .expect(200)
