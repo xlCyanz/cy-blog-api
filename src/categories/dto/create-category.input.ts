@@ -11,7 +11,6 @@ export default class CreateCategoryInput {
 
   @IsString()
   @IsOptional()
-  @IsNotEmpty({ message: MessageCode.CATEGORY_NAME_REQUIRED })
   @MaxLength(200)
   @Field(() => String, { nullable: true })
   description: string;

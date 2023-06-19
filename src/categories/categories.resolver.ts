@@ -9,7 +9,6 @@ import {
 import { MessageCode, Response } from "@interfaces";
 
 import Category from "./entities/category.entity";
-import CategoriesYup from "./categories.yup";
 import CategoriesService from "./categories.service";
 import CreateCategoryInput from "./dto/create-category.input";
 import UpdateCategoryInput from "./dto/update-category.input";
@@ -17,10 +16,7 @@ import { ResponseCategories, ResponseCategory } from "./dto/response.category";
 
 @Resolver(() => Category)
 export default class CategoriesResolver {
-  constructor(
-    private readonly categoriesService: CategoriesService,
-    private readonly categoriesYup: CategoriesYup,
-  ) {}
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @Query(() => ResponseCategories, { name: "categories" })
   async findAll(): Promise<Response<Category[]>> {
@@ -100,8 +96,7 @@ export default class CategoriesResolver {
     input: CreateCategoryInput,
   ): Promise<Response<Category>> {
     try {
-      const validateCategory = this.categoriesYup.validationCategory(input);
-      const newCategory = await this.categoriesService.create(validateCategory);
+      const newCategory = await this.categoriesService.create(input);
 
       return {
         statusCode: HttpStatus.CREATED,
