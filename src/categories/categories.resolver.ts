@@ -95,19 +95,13 @@ export default class CategoriesResolver {
     @Args("input", { type: () => CreateCategoryInput })
     input: CreateCategoryInput,
   ): Promise<Response<Category>> {
-    try {
-      const newCategory = await this.categoriesService.create(input);
+    const newCategory = await this.categoriesService.create(input);
 
-      return {
-        statusCode: HttpStatus.CREATED,
-        messageCode: MessageCode.CATEGORY_CREATED,
-        data: newCategory,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        ...error.response,
-      });
-    }
+    return {
+      statusCode: HttpStatus.CREATED,
+      messageCode: MessageCode.CATEGORY_CREATED,
+      data: newCategory,
+    };
   }
 
   @Mutation(() => ResponseCategory)
@@ -138,7 +132,7 @@ export default class CategoriesResolver {
 
   @Mutation(() => ResponseCategory)
   async removeCategory(
-    @Args("_id", { type: () => Number }) categoryId: number,
+    @Args("id", { type: () => Number }) categoryId: number,
   ): Promise<Response<Category>> {
     if (!categoryId) {
       throw new BadRequestException({

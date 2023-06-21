@@ -3,7 +3,7 @@
  */
 const FRAGMENT_CATEGORY = `
 fragment Category on Category {
-  _id
+  id
   name
   description
 }
@@ -45,8 +45,8 @@ query GET_ALL_CATEGORIES {
 
 export const GET_CATEGORY_BY_ID = `
 ${FRAGMENT_RESPONSE_CATEGORY}
-query GET_CATEGORY_BY_ID($id: String!) {
-  categoryById(_id: $id) {
+query GET_CATEGORY_BY_ID($id: Float!) {
+  categoryById(id: $id) {
     ...ResponseCategory
   }
 }
@@ -75,8 +75,8 @@ mutation CREATE_CATEGORY($name: String!, $description: String) {
 
 export const UPDATE_CATEGORY = `
 ${FRAGMENT_RESPONSE_CATEGORY}
-mutation UPDATE_CATEGORY($_id: String!, $name: String, $description: String) {
-  updateCategory(input: { _id: $_id, name: $name, description: $description }) {
+mutation UPDATE_CATEGORY($id: Float!, $name: String, $description: String) {
+  updateCategory(input: { id: $id, name: $name, description: $description }) {
     ...ResponseCategory
   }
 }
@@ -84,8 +84,8 @@ mutation UPDATE_CATEGORY($_id: String!, $name: String, $description: String) {
 
 export const REMOVE_CATEGORY = `
 ${FRAGMENT_RESPONSE_CATEGORY}
-mutation REMOVE_CATEGORY($id: String!) {
-  removeCategory(_id: $id) {
+mutation REMOVE_CATEGORY($id: Float!) {
+  removeCategory(id: $id) {
     ...ResponseCategory
   }
 }

@@ -57,7 +57,7 @@ describe("Categories (e2e)", () => {
           ...category,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { createCategory } = res.body.data;
 
@@ -65,7 +65,7 @@ describe("Categories (e2e)", () => {
         expect(createCategory.messageCode).toBe(MessageCode.CATEGORY_CREATED);
         expect(createCategory.data).toBeDefined();
 
-        expect(createCategory.data._id).toBeDefined();
+        expect(createCategory.data.id).toBeDefined();
         expect(createCategory.data.name).toBe(category.name);
         expect(createCategory.data.description).toBe(category.description);
       }));
@@ -79,11 +79,11 @@ describe("Categories (e2e)", () => {
           ...category,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const error = res.body.errors[0].extensions.response;
 
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.statusCode).toBe(HttpStatus.CONFLICT);
         expect(error.messageCode).toBe(MessageCode.CATEGORY_ALREADY_EXISTS);
         expect(res.body.data).toBeNull();
       }));
@@ -94,7 +94,7 @@ describe("Categories (e2e)", () => {
       .send({
         query: GET_ALL_CATEGORIES,
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { categories } = res.body.data;
 
@@ -114,7 +114,7 @@ describe("Categories (e2e)", () => {
           name: category.name,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { categoryByName } = res.body.data;
 
@@ -122,11 +122,11 @@ describe("Categories (e2e)", () => {
         expect(categoryByName.statusCode).toBe(HttpStatus.FOUND);
         expect(categoryByName.messageCode).toBe(MessageCode.CATEGORY_FOUND);
 
-        expect(categoryByName.data._id).toBeDefined();
+        expect(categoryByName.data.id).toBeDefined();
         expect(categoryByName.data.name).toBe(category.name);
         expect(categoryByName.data.description).toBe(category.description);
 
-        categoryUpdated.id = categoryByName.data.id;
+        categoryUpdated.id = Number(categoryByName.data.id);
       }));
 
   it("Find a category by empty name", async () =>
@@ -138,7 +138,7 @@ describe("Categories (e2e)", () => {
           name: "",
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const error = res.body.errors[0].extensions.response;
 
@@ -153,10 +153,10 @@ describe("Categories (e2e)", () => {
       .send({
         query: GET_CATEGORY_BY_ID,
         variables: {
-          id: categoryUpdated.id,
+          id: Number(categoryUpdated.id),
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { categoryById } = res.body.data;
 
@@ -168,39 +168,21 @@ describe("Categories (e2e)", () => {
         expect(categoryById.data.description).toBe(category.description);
       }));
 
-  it("Find a category by empty id", async () =>
+  it("Find a category by wrong id", async () =>
     await request(app.getHttpServer())
       .post(path)
       .send({
         query: GET_CATEGORY_BY_ID,
         variables: {
-          id: "",
+          id: 0,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const error = res.body.errors[0].extensions.response;
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
-        expect(res.body.data).toBeNull();
-      }));
-
-  it("Find a category by invalid id", async () =>
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: GET_CATEGORY_BY_ID,
-        variables: {
-          id: `yff48q4vmqlmh6loang85yphyff48q4vmqloang85yph`,
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       }));
 
@@ -213,7 +195,7 @@ describe("Categories (e2e)", () => {
           ...categoryUpdated,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { updateCategory } = res.body.data;
 
@@ -221,7 +203,7 @@ describe("Categories (e2e)", () => {
         expect(updateCategory.messageCode).toBe(MessageCode.CATEGORY_UPDATED);
         expect(updateCategory.data).toBeDefined();
 
-        expect(updateCategory.data._id).toBeDefined();
+        expect(updateCategory.data.id).toBeDefined();
         expect(updateCategory.data.name).toBe(categoryUpdated.name);
         expect(updateCategory.data.description).toBe(
           categoryUpdated.description,
@@ -229,40 +211,21 @@ describe("Categories (e2e)", () => {
       });
   });
 
-  it("Update a category with empty id", async () => {
+  it("Update a category with wrong id", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
         query: UPDATE_CATEGORY,
         variables: {
-          _id: "",
+          id: 0,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const error = res.body.errors[0].extensions.response;
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
-        expect(res.body.data).toBeNull();
-      });
-  });
-
-  it("Update a category with invalid id", async () => {
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: UPDATE_CATEGORY,
-        variables: {
-          _id: "yff48q4vmql2323232ng85yphyff48q4vmqloang85yph2442",
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -276,7 +239,7 @@ describe("Categories (e2e)", () => {
           id: categoryUpdated.id,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const { removeCategory } = res.body.data;
 
@@ -285,39 +248,21 @@ describe("Categories (e2e)", () => {
         expect(removeCategory.data).toBeDefined();
       }));
 
-  it("Remove a category with empty id", async () =>
+  it("Remove a category with wrong id", async () =>
     await request(app.getHttpServer())
       .post(path)
       .send({
         query: REMOVE_CATEGORY,
         variables: {
-          id: "",
+          id: 0,
         },
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
       .then((res) => {
         const error = res.body.errors[0].extensions.response;
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
-        expect(res.body.data).toBeNull();
-      }));
-
-  it("Remove a invalid category", async () =>
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: REMOVE_CATEGORY,
-        variables: {
-          id: "28462842698426",
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
         expect(res.body.data).toBeNull();
       }));
 });
