@@ -60,7 +60,7 @@ export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.pre("save", function (next) {
   if (!this.slug && this.isNew) {
-    this.slug = slugify(`${this.title}${this.author.firstname}`, {
+    this.slug = slugify(`${this.title}${this.author.firstName}`, {
       lower: true,
       trim: true,
     });

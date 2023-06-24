@@ -8,7 +8,6 @@ import {
 import { MessageCode, Response } from "@interfaces";
 
 import User from "./entities/user.entity";
-import UsersYup from "./users.yup";
 import UsersService from "./users.service";
 import ResponseUser from "./dto/response.user";
 import CreateUserInput from "./dto/create-user.input";
@@ -16,71 +15,14 @@ import UpdateUserInput from "./dto/update-user.input";
 
 @Resolver(() => User)
 export default class UsersResolver {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly usersYup: UsersYup,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @Query(() => ResponseUser, { name: "user" })
-  async findById(
-    @Args("id", { type: () => String }) userId: string,
-  ): Promise<Response<User>> {
-    if (!userId) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        messageCode: MessageCode.USER_ID_REQUIRED,
-      });
-    }
-
-    const userById = await this.usersService.findById(userId);
-
-    if (!userById) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        messageCode: MessageCode.USER_NOT_FOUND,
-      });
-    }
-
+  @Query(() => ResponseUser, { name: "me" })
+  async me() {
     return {
-      statusCode: HttpStatus.FOUND,
-      messageCode: MessageCode.USER_FOUND,
-      data: userById,
+      statusCode: HttpStatus.NOT_IMPLEMENTED,
+      messageCode: MessageCode.USER_NOT_IMPLEMENTED,
     };
-  }
-
-  @Query(() => ResponseUser, { name: "userByEmail" })
-  async findByEmail(
-    @Args("email", { type: () => String }) email: string,
-  ): Promise<Response<User>> {
-    if (!email) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        messageCode: MessageCode.USER_MAIL_REQUIRED,
-      });
-    }
-
-    try {
-      const validateEmail = this.usersYup.validationUserEmail(email);
-      const userByEmail = await this.usersService.findByEmail(validateEmail);
-
-      if (!userByEmail) {
-        throw new NotFoundException({
-          statusCode: HttpStatus.NOT_FOUND,
-          messageCode: MessageCode.USER_NOT_FOUND,
-        });
-      }
-
-      return {
-        statusCode: HttpStatus.FOUND,
-        messageCode: MessageCode.USER_FOUND,
-        data: userByEmail,
-      };
-    } catch (error) {
-      throw new NotFoundException({
-        statusCode: HttpStatus.NOT_FOUND,
-        messageCode: error.errors[0],
-      });
-    }
   }
 
   @Mutation(() => ResponseUser)
@@ -88,8 +30,7 @@ export default class UsersResolver {
     @Args("input") input: CreateUserInput,
   ): Promise<Response<User>> {
     try {
-      const validateUser = this.usersYup.validationUser(input);
-      const userCreated = await this.usersService.create(validateUser);
+      const userCreated = await this.usersService.create(input);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -107,7 +48,7 @@ export default class UsersResolver {
   async updateUser(
     @Args("input") updateUserInput: UpdateUserInput,
   ): Promise<Response<User>> {
-    if (!updateUserInput._id) {
+    if (!updateUserInput.id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
         messageCode: MessageCode.USER_ID_REQUIRED,
@@ -131,7 +72,7 @@ export default class UsersResolver {
 
   @Mutation(() => ResponseUser)
   async removeUser(
-    @Args("id", { type: () => String }) userId: string,
+    @Args("id", { type: () => Number }) userId: number,
   ): Promise<Response<User>> {
     if (!userId) {
       throw new BadRequestException({

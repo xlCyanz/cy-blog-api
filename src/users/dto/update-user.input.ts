@@ -6,6 +6,6 @@ import CreateUserInput from "./create-user.input";
 export default class UpdateUserInput extends PartialType(
   OmitType(CreateUserInput, ["email", "password"] as const),
 ) {
-  @Field(() => String)
-  _id: string;
+  @Field(() => Number)
+  id: number;
 }

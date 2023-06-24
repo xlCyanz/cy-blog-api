@@ -5,9 +5,9 @@ import { ICategory, IPost, IUser } from "@interfaces";
 export default class FakeUtils {
   public getUser(): IUser {
     return {
-      _id: null,
-      firstname: faker.name.firstName(),
-      lastname: faker.name.lastName(),
+      id: 0,
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
       avatar: faker.image.avatar(),
       email: faker.internet.email(),
       password: faker.internet.password(),

@@ -4,28 +4,28 @@
  *
  */
 export const FRAGMENT_USER = `
-fragment User on User {
-  _id
-  firstname
-  lastname
-  email
-  password
-  avatar
-  role
-  createdAt
-  updatedAt
-}
+  fragment User on User {
+    id
+    firstName
+    lastName
+    email
+    password
+    avatar
+    role
+    createdAt
+    updatedAt
+  }
 `;
 
 export const FRAGMENT_RESPONSE_USER = `
-${FRAGMENT_USER}
-fragment ResponseUser on ResponseUser {
-  statusCode
-  messageCode
-  data {
-    ...User
+  ${FRAGMENT_USER}
+  fragment ResponseUser on ResponseUser {
+    statusCode
+    messageCode
+    data {
+      ...User
+    }
   }
-}
 `;
 
 /**
@@ -33,31 +33,14 @@ fragment ResponseUser on ResponseUser {
  * Queries
  *
  */
-export const GET_USER_BY_ID = `
-${FRAGMENT_RESPONSE_USER}
-query GET_USER_BY_ID($id: String!) {
-  user(id: $id) {
-    ...ResponseUser
+export const GET_USER_ME = `
+  ${FRAGMENT_RESPONSE_USER}
+  query GET_USER_ME {
+    me {
+      statusCode
+      messageCode
+    }
   }
-}
-`;
-
-export const GET_USER_BY_NAME = `
-${FRAGMENT_RESPONSE_USER}
-query GET_USER_BY_NAME($name: String!) {
-  userByName(name: $name) {
-    ...ResponseUser
-  }
-}
-`;
-
-export const GET_USER_BY_EMAIL = `
-${FRAGMENT_RESPONSE_USER}
-query GET_USER_BY_EMAIL($email: String!) {
-  userByEmail(email: $email) {
-    ...ResponseUser
-  }
-}
 `;
 
 /**
@@ -66,30 +49,30 @@ query GET_USER_BY_EMAIL($email: String!) {
  *
  */
 export const CREATE_USER = `
-${FRAGMENT_RESPONSE_USER}
-mutation CREATE_USER($input: CreateUserInput!) {
-  createUser(input: $input) {
-    ...ResponseUser
+  ${FRAGMENT_RESPONSE_USER}
+  mutation CREATE_USER($input: CreateUserInput!) {
+    createUser(input: $input) {
+      ...ResponseUser
+    }
   }
-}
 `;
 
 export const UPDATE_USER = `
-${FRAGMENT_RESPONSE_USER}
-mutation UPDATE_USER($input: UpdateUserInput!) {
-  updateUser(input: $input) {
-    ...ResponseUser
+  ${FRAGMENT_RESPONSE_USER}
+  mutation UPDATE_USER($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      ...ResponseUser
+    }
   }
-}
 `;
 
 export const REMOVE_USER = `
-${FRAGMENT_RESPONSE_USER}
-mutation REMOVE_USER($id: String!) {
-  removeUser(id: $id) {
-    ...ResponseUser
+  ${FRAGMENT_RESPONSE_USER}
+  mutation REMOVE_USER($id: Float!) {
+    removeUser(id: $id) {
+      ...ResponseUser
+    }
   }
-}
 `;
 
 export const LOGIN_USER = ``;
