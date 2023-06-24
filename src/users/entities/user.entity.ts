@@ -1,8 +1,9 @@
 import * as bcrypt from "bcrypt";
+import { User } from "@prisma/client";
 import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({ description: "User entity" })
-export default class User {
+export class UserEntity implements User {
   @Field(() => Number, { description: "User identifier" })
   id: number;
 
@@ -25,10 +26,10 @@ export default class User {
   avatar: string;
 
   @Field(() => Date)
-  createdAt?: Date;
+  createdAt: Date;
 
-  @Field(() => Date)
-  updatedAt?: Date;
+  @Field(() => Date, { nullable: true })
+  updatedAt: Date | null;
 
   public async comparePassword?(password: string) {
     return await bcrypt.compare(password, this.password);

@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
-import User from "./entities/user.entity";
+import { UserEntity } from "./entities/user.entity";
 import CreateUserInput from "./dto/create-user.input";
-import UpdateUserInput from "./dto/update-user.input";
+import { UpdateUserInput } from "./dto/update-user.input";
 
 @Injectable()
-export default class UsersMapper {
-  dtoToEntity(dto: CreateUserInput | UpdateUserInput): User {
-    return new User({ ...dto });
+export class UsersMapper {
+  dtoToEntity(dto: CreateUserInput | UpdateUserInput): UserEntity {
+    return new UserEntity({ ...dto });
   }
 
-  entityToDto(user: User): CreateUserInput {
+  entityToDto(user: UserEntity): CreateUserInput {
     return new CreateUserInput({ ...user });
   }
 }

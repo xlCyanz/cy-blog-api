@@ -8,18 +8,18 @@ import {
 
 import { MessageCode, Response } from "@interfaces";
 
-import Category from "./entities/category.entity";
-import CategoriesService from "./categories.service";
-import CreateCategoryInput from "./dto/create-category.input";
-import UpdateCategoryInput from "./dto/update-category.input";
+import { CategoryEntity } from "./entities/category.entity";
+import { CategoriesService } from "./categories.service";
+import { CreateCategoryInput } from "./dto/create-category.input";
+import { UpdateCategoryInput } from "./dto/update-category.input";
 import { ResponseCategories, ResponseCategory } from "./dto/response.category";
 
-@Resolver(() => Category)
-export default class CategoriesResolver {
+@Resolver(() => CategoryEntity)
+export class CategoriesResolver {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Query(() => ResponseCategories, { name: "categories" })
-  async findAll(): Promise<Response<Category[]>> {
+  async findAll(): Promise<Response<CategoryEntity[]>> {
     const categories = await this.categoriesService.findAll();
 
     if (categories.length === 0 || !categories) {
@@ -39,7 +39,7 @@ export default class CategoriesResolver {
   @Query(() => ResponseCategory, { name: "categoryById" })
   async findById(
     @Args("id", { type: () => Number }) categoryId: number,
-  ): Promise<Response<Category>> {
+  ): Promise<Response<CategoryEntity>> {
     if (!categoryId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
@@ -66,7 +66,7 @@ export default class CategoriesResolver {
   @Query(() => ResponseCategory, { name: "categoryByName" })
   async findByName(
     @Args("name", { type: () => String }) categoryName: string,
-  ): Promise<Response<Category>> {
+  ): Promise<Response<CategoryEntity>> {
     if (!categoryName) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
@@ -94,7 +94,7 @@ export default class CategoriesResolver {
   async createCategory(
     @Args("input", { type: () => CreateCategoryInput })
     input: CreateCategoryInput,
-  ): Promise<Response<Category>> {
+  ): Promise<Response<CategoryEntity>> {
     const newCategory = await this.categoriesService.create(input);
 
     return {
@@ -107,7 +107,7 @@ export default class CategoriesResolver {
   @Mutation(() => ResponseCategory)
   async updateCategory(
     @Args("input") input: UpdateCategoryInput,
-  ): Promise<Response<Category>> {
+  ): Promise<Response<CategoryEntity>> {
     if (!input.id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
@@ -133,7 +133,7 @@ export default class CategoriesResolver {
   @Mutation(() => ResponseCategory)
   async removeCategory(
     @Args("id", { type: () => Number }) categoryId: number,
-  ): Promise<Response<Category>> {
+  ): Promise<Response<CategoryEntity>> {
     if (!categoryId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,

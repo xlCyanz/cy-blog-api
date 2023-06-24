@@ -1,70 +1,42 @@
-import slugify from "slugify";
-import { Types } from "mongoose";
+import { Post } from "@prisma/client";
 import { ObjectType, Field } from "@nestjs/graphql";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import User from "@/users/entities/user.entity";
-import Category from "@/categories/entities/category.entity";
+import { UserEntity } from "@/users/entities/user.entity";
+import { CategoryEntity } from "@/categories/entities/category.entity";
 
 @ObjectType({ description: "Post entity" })
-@Schema({ timestamps: true })
-export class Post {
+export class PostEntity implements Post {
   @Field(() => String, { description: "Post identifier" })
-  _id: Types.ObjectId;
+  id: number;
 
   @Field(() => String, { description: "Post title" })
-  @Prop({ required: true })
   title: string;
 
-  @Field(() => String, { description: "Post content" })
-  @Prop({ required: true })
-  content: string;
+  @Field(() => String, { description: "Post body" })
+  body: string;
 
   @Field(() => String, { description: "Post image", nullable: true })
-  @Prop({ required: true })
   image: string;
 
-  @Field(() => User, { description: "Post author" })
-  @Prop({
-    type: Types.ObjectId,
-    ref: "User",
-    required: true,
-  })
-  author: User;
+  @Field(() => String, { description: "Post slug" })
+  slug: string;
 
-  @Field(() => Category, { description: "Post category" })
-  @Prop({
-    type: Types.ObjectId,
-    ref: "Category",
-    required: true,
-  })
-  category?: Category;
+  @Field(() => Boolean, { description: "Post published state" })
+  published: boolean;
 
-  @Field(() => String, { description: "Post slug", nullable: true })
-  @Prop()
-  slug?: string;
+  @Field(() => UserEntity, { description: "Post author" })
+  authorId: number;
+
+  @Field(() => CategoryEntity, { description: "Post category" })
+  categoryId: number;
 
   @Field(() => Date)
-  createdAt?: Date;
+  createdAt: Date;
 
   @Field(() => Date)
-  updatedAt?: Date;
+  updatedAt: Date;
 
   constructor(init?: Partial<Post>) {
     Object.assign(this, init);
   }
 }
-
-export type PostDocument = Document & Post;
-export const PostSchema = SchemaFactory.createForClass(Post);
-
-PostSchema.pre("save", function (next) {
-  if (!this.slug && this.isNew) {
-    this.slug = slugify(`${this.title}${this.author.firstName}`, {
-      lower: true,
-      trim: true,
-    });
-  }
-
-  next();
-});

@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import CategoriesMapper from "./categories.mapper";
-import CreateCategoryInput from "./dto/create-category.input";
-import UpdateCategoryInput from "./dto/update-category.input";
-import CategoriesRepository from "./categories.repository";
+import { CategoriesMapper } from "./categories.mapper";
+import { CreateCategoryInput } from "./dto/create-category.input";
+import { UpdateCategoryInput } from "./dto/update-category.input";
+import { CategoriesRepository } from "./categories.repository";
 
 @Injectable()
-export default class CategoriesService {
+export class CategoriesService {
   constructor(
     private readonly categoriesRepository: CategoriesRepository,
     private categoriesMapper: CategoriesMapper,

@@ -7,14 +7,14 @@ import {
 
 import { MessageCode, Response } from "@interfaces";
 
-import User from "./entities/user.entity";
-import UsersService from "./users.service";
-import ResponseUser from "./dto/response.user";
+import { UserEntity } from "./entities/user.entity";
+import { UsersService } from "./users.service";
+import { ResponseUser } from "./dto/response.user";
 import CreateUserInput from "./dto/create-user.input";
-import UpdateUserInput from "./dto/update-user.input";
+import { UpdateUserInput } from "./dto/update-user.input";
 
-@Resolver(() => User)
-export default class UsersResolver {
+@Resolver(() => UserEntity)
+export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => ResponseUser, { name: "me" })
@@ -28,7 +28,7 @@ export default class UsersResolver {
   @Mutation(() => ResponseUser)
   async createUser(
     @Args("input") input: CreateUserInput,
-  ): Promise<Response<User>> {
+  ): Promise<Response<UserEntity>> {
     try {
       const userCreated = await this.usersService.create(input);
 
@@ -47,7 +47,7 @@ export default class UsersResolver {
   @Mutation(() => ResponseUser)
   async updateUser(
     @Args("input") updateUserInput: UpdateUserInput,
-  ): Promise<Response<User>> {
+  ): Promise<Response<UserEntity>> {
     if (!updateUserInput.id) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
@@ -73,7 +73,7 @@ export default class UsersResolver {
   @Mutation(() => ResponseUser)
   async removeUser(
     @Args("id", { type: () => Number }) userId: number,
-  ): Promise<Response<User>> {
+  ): Promise<Response<UserEntity>> {
     if (!userId) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,

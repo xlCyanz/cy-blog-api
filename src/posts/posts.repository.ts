@@ -1,27 +1,62 @@
-import { Injectable } from "@nestjs/common";
+import * as R from "radash";
+import {
+  HttpStatus,
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from "@nestjs/common";
 
-import { CreatePostInput } from "./dto/create-post.input";
-import { UpdatePostInput } from "./dto/update-post.input";
+import { MessageCode } from "@/interfaces";
+import { PrismaService } from "@/prisma/prisma.service";
+
+import { PostEntity } from "./entities/post.entity";
 
 @Injectable()
 export class PostsRepository {
-  create(createBlogInput: CreatePostInput) {
-    return "This action adds a new blog";
+  constructor(private prisma: PrismaService) {}
+
+  async findAll(draft = false): Promise<PostEntity[]> {
+    return await this.prisma.post.findMany({ where: { published: !draft } });
   }
 
-  findAll() {
-    return `This action returns all blogs`;
+  async findById(postId: number): Promise<PostEntity> {
+    return await this.prisma.post.findUnique({ where: { id: postId } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} blog`;
+  async findAllByName(postName: string): Promise<PostEntity[]> {
+    return await this.prisma.post.findMany({
+      where: {
+        title: { contains: postName },
+      },
+    });
   }
 
-  update(id: number, updateBlogInput: UpdatePostInput) {
-    return `This action updates a #${id} blog`;
+  async create(newPost: PostEntity): Promise<PostEntity> {
+    try {
+      return await this.prisma.post.create({ data: newPost });
+    } catch (error) {
+      if (error.code === "P2002") {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          messageCode: MessageCode.POST_ALREADY_EXISTS,
+        });
+      }
+      throw new BadRequestException(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async update(updatePost: PostEntity): Promise<PostEntity> {
+    try {
+      return await this.prisma.post.update({
+        data: R.omit(updatePost, ["id"]),
+        where: { id: updatePost.id },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async remove(postId: number): Promise<PostEntity> {
+    return await this.prisma.post.delete({ where: { id: postId } });
   }
 }

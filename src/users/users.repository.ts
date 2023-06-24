@@ -8,13 +8,13 @@ import {
 import { MessageCode } from "@interfaces";
 import { PrismaService } from "@/prisma/prisma.service";
 
-import User from "./entities/user.entity";
+import { UserEntity } from "./entities/user.entity";
 
 @Injectable()
-export default class UsersRepository {
+export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(newUser: User): Promise<User> {
+  async create(newUser: UserEntity): Promise<UserEntity> {
     try {
       return await this.prisma.user.create({
         data: { ...newUser, role: "user" },
@@ -30,7 +30,7 @@ export default class UsersRepository {
     }
   }
 
-  async update(updateUserInput: User): Promise<User> {
+  async update(updateUserInput: UserEntity): Promise<UserEntity> {
     try {
       return await this.prisma.user.update({
         data: updateUserInput,
@@ -41,7 +41,7 @@ export default class UsersRepository {
     }
   }
 
-  async remove(userId: number): Promise<User> {
+  async remove(userId: number): Promise<UserEntity> {
     return await this.prisma.user.delete({ where: { id: userId } });
   }
 }

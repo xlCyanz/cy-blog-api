@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { InputType, Field, PartialType, OmitType } from "@nestjs/graphql";
 
 import { CreatePostInput } from "./create-post.input";
@@ -7,6 +6,6 @@ import { CreatePostInput } from "./create-post.input";
 export class UpdatePostInput extends PartialType(
   OmitType(CreatePostInput, ["authorId", "categoryId"] as const),
 ) {
-  @Field(() => String)
-  _id: Types.ObjectId;
+  @Field(() => Number)
+  id: number;
 }

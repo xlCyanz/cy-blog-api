@@ -1,16 +1,14 @@
 import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
+
+import { PrismaModule } from "@/prisma/prisma.module";
 
 import { PostsMapper } from "./posts.mapper";
 import { PostsService } from "./posts.service";
 import { PostsResolver } from "./posts.resolver";
 import { PostsRepository } from "./posts.repository";
-import { Post, PostSchema } from "./entities/post.entity";
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-  ],
+  imports: [PrismaModule],
   providers: [PostsResolver, PostsService, PostsRepository, PostsMapper],
 })
 export class PostsModule {}

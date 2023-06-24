@@ -11,11 +11,11 @@ export class CreatePostInput {
   @Field(() => String, { nullable: true })
   image: string;
 
-  @Field(() => String)
-  authorId: string;
+  @Field(() => Number)
+  authorId: number;
 
-  @Field(() => String, { nullable: true })
-  categoryId: string;
+  @Field(() => Number)
+  categoryId: number;
 
   constructor(init?: Partial<CreatePostInput>) {
     Object.assign(this, init);

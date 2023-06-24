@@ -2,12 +2,12 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 import { BaseResponse } from "@/response.dto";
 
-import Category from "../entities/category.entity";
+import { CategoryEntity } from "../entities/category.entity";
 
 @ObjectType({ description: "Category response" })
 export class ResponseCategory extends BaseResponse {
-  @Field(() => Category)
-  data?: Category;
+  @Field(() => CategoryEntity)
+  data?: CategoryEntity;
 
   constructor(init?: Partial<ResponseCategory>) {
     super();
@@ -17,8 +17,8 @@ export class ResponseCategory extends BaseResponse {
 
 @ObjectType({ description: "Categories response" })
 export class ResponseCategories extends BaseResponse {
-  @Field(() => [Category], { nullable: true })
-  data?: Category[];
+  @Field(() => [CategoryEntity], { nullable: true })
+  data?: CategoryEntity[];
 
   constructor(init?: Partial<ResponseCategories>) {
     super();

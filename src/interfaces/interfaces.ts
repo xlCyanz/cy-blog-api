@@ -1,9 +1,12 @@
-import User from "../users/entities/user.entity";
-import Category from "../categories/entities/category.entity";
-import UpdateUserInput from "../users/dto/update-user.input";
-import UpdateCategoryInput from "../categories/dto/update-category.input";
+import { UserEntity } from "@users/entities/user.entity";
+import { UpdateUserInput } from "@users/dto/update-user.input";
 
-import { Post } from "../posts/entities/post.entity";
+import { PostEntity } from "@posts/entities/post.entity";
+import { UpdatePostInput } from "@/posts/dto/update-post.input";
+
+import { CategoryEntity } from "@categories/entities/category.entity";
+import { UpdateCategoryInput } from "@categories/dto/update-category.input";
+
 import { MessageCode } from "./message-code";
 
 export interface Response<T> {
@@ -13,10 +16,11 @@ export interface Response<T> {
   data?: T;
 }
 
-export type IUser = User;
+export type IUser = UserEntity;
 export type IUpdateUser = UpdateUserInput;
 
-export type ICategory = Category;
+export type ICategory = CategoryEntity;
 export type IUpdateCategory = UpdateCategoryInput;
 
-export type IPost = Post;
+export type IPost = PostEntity;
+export type IPostCategory = UpdatePostInput;

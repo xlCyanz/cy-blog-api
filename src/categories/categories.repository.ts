@@ -9,27 +9,27 @@ import {
 import { MessageCode } from "@/interfaces";
 import { PrismaService } from "@/prisma/prisma.service";
 
-import Category from "./entities/category.entity";
+import { CategoryEntity } from "./entities/category.entity";
 
 @Injectable()
-export default class CategoriesRepository {
+export class CategoriesRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<Category[]> {
+  async findAll(): Promise<CategoryEntity[]> {
     return await this.prisma.category.findMany();
   }
 
-  async findById(categoryId: number): Promise<Category> {
+  async findById(categoryId: number): Promise<CategoryEntity> {
     return await this.prisma.category.findUnique({ where: { id: categoryId } });
   }
 
-  async findByName(categoryName: string): Promise<Category> {
+  async findByName(categoryName: string): Promise<CategoryEntity> {
     return await this.prisma.category.findUnique({
       where: { name: categoryName },
     });
   }
 
-  async create(newCategory: Category): Promise<Category> {
+  async create(newCategory: CategoryEntity): Promise<CategoryEntity> {
     try {
       return await this.prisma.category.create({ data: newCategory });
     } catch (error) {
@@ -43,7 +43,7 @@ export default class CategoriesRepository {
     }
   }
 
-  async update(updateCategory: Category): Promise<Category> {
+  async update(updateCategory: CategoryEntity): Promise<CategoryEntity> {
     try {
       return await this.prisma.category.update({
         data: R.omit(updateCategory, ["id", "createdAt", "updatedAt"]),

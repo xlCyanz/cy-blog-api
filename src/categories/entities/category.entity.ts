@@ -1,7 +1,8 @@
+import { Category } from "@prisma/client";
 import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({ description: "Category entity" })
-export default class Category {
+export class CategoryEntity implements Category {
   @Field(() => String, { description: "Category identifier" })
   id: number;
 
@@ -12,10 +13,10 @@ export default class Category {
   description: string;
 
   @Field(() => Date)
-  createdAt?: Date;
+  createdAt: Date;
 
   @Field(() => Date, { nullable: true })
-  updatedAt?: Date;
+  updatedAt: Date;
 
   constructor(init?: Partial<Category>) {
     Object.assign(this, init);

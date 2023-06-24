@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { Injectable } from "@nestjs/common";
 
 import { CreatePostInput } from "./dto/create-post.input";
@@ -18,7 +17,7 @@ export class PostsService {
     return `This action returns a #${id} post`;
   }
 
-  update(id: Types.ObjectId, updatePostInput: UpdatePostInput) {
+  update(id: number, updatePostInput: UpdatePostInput) {
     return `This action updates a #${id} post`;
   }
 

@@ -1,9 +1,9 @@
-import { MessageCode } from "@/interfaces";
+import { MessageCode } from "../../interfaces";
 import { InputType, Field } from "@nestjs/graphql";
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 
 @InputType()
-export default class CreateCategoryInput {
+export class CreateCategoryInput {
   @IsString()
   @IsNotEmpty({ message: MessageCode.CATEGORY_NAME_REQUIRED })
   @Field(() => String, { nullable: false })

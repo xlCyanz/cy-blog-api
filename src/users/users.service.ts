@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import UsersMapper from "./users.mapper";
-import UsersRepository from "./users.repository";
+import { UsersMapper } from "./users.mapper";
+import { UsersRepository } from "./users.repository";
 import CreateUserInput from "./dto/create-user.input";
-import UpdateUserInput from "./dto/update-user.input";
+import { UpdateUserInput } from "./dto/update-user.input";
 
 @Injectable()
-export default class UsersService {
+export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private usersMapper: UsersMapper,
