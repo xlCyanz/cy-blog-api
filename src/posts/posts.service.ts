@@ -1,27 +1,42 @@
 import { Injectable } from "@nestjs/common";
 
+import { PostsMapper } from "./posts.mapper";
 import { CreatePostInput } from "./dto/create-post.input";
 import { UpdatePostInput } from "./dto/update-post.input";
+import { PostsRepository } from "./posts.repository";
 
 @Injectable()
 export class PostsService {
+  constructor(
+    private readonly postsRepository: PostsRepository,
+    private postsMapper: PostsMapper,
+  ) {}
+
+  findAll(draft = false) {
+    return this.postsRepository.findAll(draft);
+  }
+
+  findById(postId: number) {
+    return this.postsRepository.findById(postId);
+  }
+
+  findAllByTitle(postTitle: string) {
+    return this.postsRepository.findAllByTitle(postTitle);
+  }
+
   create(createPostInput: CreatePostInput) {
-    return "This action adds a new post";
+    return this.postsRepository.create(
+      this.postsMapper.dtoToEntity(createPostInput),
+    );
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  update(updatePostInput: UpdatePostInput) {
+    return this.postsRepository.update(
+      this.postsMapper.dtoToEntity(updatePostInput),
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
-
-  update(id: number, updatePostInput: UpdatePostInput) {
-    return `This action updates a #${id} post`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  remove(postId: number) {
+    return this.postsRepository.remove(postId);
   }
 }

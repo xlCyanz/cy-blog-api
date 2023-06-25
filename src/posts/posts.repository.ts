@@ -23,17 +23,19 @@ export class PostsRepository {
     return await this.prisma.post.findUnique({ where: { id: postId } });
   }
 
-  async findAllByName(postName: string): Promise<PostEntity[]> {
+  async findAllByTitle(postTitle: string): Promise<PostEntity[]> {
     return await this.prisma.post.findMany({
       where: {
-        title: { contains: postName },
+        title: { contains: postTitle },
       },
     });
   }
 
   async create(newPost: PostEntity): Promise<PostEntity> {
     try {
-      return await this.prisma.post.create({ data: newPost });
+      return await this.prisma.post.create({
+        data: R.omit(newPost, ["id", "author", "category"]),
+      });
     } catch (error) {
       if (error.code === "P2002") {
         throw new ConflictException({
@@ -48,7 +50,13 @@ export class PostsRepository {
   async update(updatePost: PostEntity): Promise<PostEntity> {
     try {
       return await this.prisma.post.update({
-        data: R.omit(updatePost, ["id"]),
+        data: R.omit(updatePost, [
+          "id",
+          "author",
+          "category",
+          "authorId",
+          "categoryId",
+        ]),
         where: { id: updatePost.id },
       });
     } catch (error) {

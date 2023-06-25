@@ -1,8 +1,9 @@
 import { Post } from "@prisma/client";
 import { ObjectType, Field } from "@nestjs/graphql";
 
-import { UserEntity } from "@/users/entities/user.entity";
-import { CategoryEntity } from "@/categories/entities/category.entity";
+import { UserEntity } from "@users/entities/user.entity";
+import { CategoryEntity } from "@categories/entities/category.entity";
+import { ICategory, IUser } from "@interfaces";
 
 @ObjectType({ description: "Post entity" })
 export class PostEntity implements Post {
@@ -24,11 +25,17 @@ export class PostEntity implements Post {
   @Field(() => Boolean, { description: "Post published state" })
   published: boolean;
 
-  @Field(() => UserEntity, { description: "Post author" })
+  @Field(() => Number, { description: "Post author id", nullable: true })
   authorId: number;
 
-  @Field(() => CategoryEntity, { description: "Post category" })
+  @Field(() => UserEntity, { description: "Post author", nullable: true })
+  author?: IUser;
+
+  @Field(() => Number, { description: "Post category id" })
   categoryId: number;
+
+  @Field(() => CategoryEntity, { description: "Post category", nullable: true })
+  category?: ICategory;
 
   @Field(() => Date)
   createdAt: Date;

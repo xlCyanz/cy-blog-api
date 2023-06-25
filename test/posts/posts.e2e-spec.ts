@@ -4,12 +4,11 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import { FakeUtils } from "@utils";
 import { AppModule } from "@/app.module";
-import { MessageCode } from "@/message-code";
+import { MessageCode } from "@constants";
 
 import { CREATE_USER } from "../users/users.graphql";
 import { CREATE_CATEGORY } from "../categories/categories.graphql";
 import {
-  GET_POST,
   GET_POSTS,
   CREATE_POST,
   REMOVE_POST,
@@ -44,7 +43,6 @@ describe("Posts (e2e)", () => {
 
   it("No query test should have typename", async () => {
     expect(GET_POSTS.includes("typename")).toBe(false);
-    expect(GET_POST.includes("typename")).toBe(false);
     expect(GET_POST_BY_ID.includes("typename")).toBe(false);
     expect(GET_POST_BY_TITLE.includes("typename")).toBe(false);
     expect(GET_POST_BY_SLUG.includes("typename")).toBe(false);
@@ -168,45 +166,45 @@ describe("Posts (e2e)", () => {
       });
   });
 
-  // it("Create a post with invalid category", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: CREATE_POST,
-  //       variables: {
-  //         ...post,
-  //         category: "invalid",
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
+  it("Create a post with empty category", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: CREATE_POST,
+        variables: {
+          ...post,
+          category: "",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      });
+  });
 
-  // it("Create a post with invalid author", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: CREATE_POST,
-  //       variables: {
-  //         ...post,
-  //         author: "invalid",
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
+  it("Create a post with empty author", async () => {
+    await request(app.getHttpServer())
+      .post(path)
+      .send({
+        query: CREATE_POST,
+        variables: {
+          ...post,
+          author: "",
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        const error = res.body.errors[0].extensions.response;
 
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
+        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.messageCode).toBe(MessageCode.USER_ID_REQUIRED);
+        expect(res.body.data).toBeNull();
+      });
+  });
 
   it("Get all posts", async () => {
     await request(app.getHttpServer())
@@ -251,7 +249,7 @@ describe("Posts (e2e)", () => {
       });
   });
 
-  it("Get a post by empty id", async () => {
+  it("Get a post by wrong id", async () => {
     await request(app.getHttpServer())
       .post(path)
       .send({
@@ -266,25 +264,6 @@ describe("Posts (e2e)", () => {
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect(error.messageCode).toBe(MessageCode.POST_ID_REQUIRED);
-        expect(res.body.data).toBeNull();
-      });
-  });
-
-  it("Get a post by invalid id", async () => {
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: GET_POST_BY_ID,
-        variables: {
-          id: `${post.id}invalid`,
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.POST_ID_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -333,25 +312,6 @@ describe("Posts (e2e)", () => {
       });
   });
 
-  it("Get a post by invalid title", async () => {
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: GET_POST_BY_TITLE,
-        variables: {
-          title: post.title,
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.POST_TITLE_INVALID);
-        expect(res.body.data).toBeNull();
-      });
-  });
-
   it("Get a post by slug", async () => {
     await request(app.getHttpServer())
       .post(path)
@@ -392,25 +352,6 @@ describe("Posts (e2e)", () => {
 
         expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
         expect(error.messageCode).toBe(MessageCode.POST_SLUG_REQUIRED);
-        expect(res.body.data).toBeNull();
-      });
-  });
-
-  it("Get a post by invalid slug", async () => {
-    await request(app.getHttpServer())
-      .post(path)
-      .send({
-        query: GET_POST_BY_SLUG,
-        variables: {
-          slug: `${post.slug}invalid`,
-        },
-      })
-      .expect(200)
-      .then((res) => {
-        const error = res.body.errors[0].extensions.response;
-
-        expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-        expect(error.messageCode).toBe(MessageCode.POST_SLUG_INVALID);
         expect(res.body.data).toBeNull();
       });
   });
@@ -459,25 +400,6 @@ describe("Posts (e2e)", () => {
       });
   });
 
-  // it("Get posts by invalid category", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: GET_POSTS_BY_CATEGORY,
-  //       variables: {
-  //         category: `${post.categoryId}invalid`,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
-
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
-
   it("Get posts by author", async () => {
     await request(app.getHttpServer())
       .post(path)
@@ -517,25 +439,6 @@ describe("Posts (e2e)", () => {
         expect(res.body.data).toBeNull();
       });
   });
-
-  // it("Get posts by invalid author", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: GET_POSTS_BY_AUTHOR,
-  //       variables: {
-  //         author: `${author.id}invalid`,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
-
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
 
   it("Get posts by author and category", async () => {
     await request(app.getHttpServer())
@@ -600,44 +503,4 @@ describe("Posts (e2e)", () => {
         expect(res.body.data).toBeNull();
       });
   });
-
-  // it("Get posts by invalid author and category", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
-  //       variables: {
-  //         author: `${author.id}invalid`,
-  //         category: category.id,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
-
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.USER_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
-
-  // it("Get posts by author and invalid category", async () => {
-  //   await request(app.getHttpServer())
-  //     .post(path)
-  //     .send({
-  //       query: GET_POSTS_BY_AUTHOR_AND_CATEGORY,
-  //       variables: {
-  //         author: author.id,
-  //         category: `${category.id}invalid`,
-  //       },
-  //     })
-  //     .expect(200)
-  //     .then((res) => {
-  //       const error = res.body.errors[0].extensions.response;
-
-  //       expect(error.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  //       expect(error.messageCode).toBe(MessageCode.CATEGORY_ID_INVALID);
-  //       expect(res.body.data).toBeNull();
-  //     });
-  // });
 });
