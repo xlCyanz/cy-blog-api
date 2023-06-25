@@ -25,6 +25,8 @@
       "@utils": ["src/utils"],
       "@interfaces": ["src/interfaces"],
       "@config/*": ["src/config/*"],
+      "@constants": ["src/constants"],
+      "@prisma/*": ["src/prisma/*"],
     }
   },
   "include": ["**/*.ts"],

@@ -5,7 +5,8 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import { FakeUtils } from "@utils";
 import { AppModule } from "@/app.module";
-import { IUpdateUser, MessageCode } from "@interfaces";
+import { MessageCode } from "@/message-code";
+import { IUpdateUser } from "@interfaces";
 
 import { CREATE_USER, REMOVE_USER, UPDATE_USER } from "./users.graphql";
 

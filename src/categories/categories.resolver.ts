@@ -6,7 +6,8 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 
-import { MessageCode, Response } from "@interfaces";
+import { Response } from "@interfaces";
+import { MessageCode } from "@constants";
 
 import { CategoryEntity } from "./entities/category.entity";
 import { CategoriesService } from "./categories.service";

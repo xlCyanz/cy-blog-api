@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 
-import { MessageCode } from "@interfaces";
+import { MessageCode } from "@constants";
 import { PrismaService } from "@/prisma/prisma.service";
 
 import { UserEntity } from "./entities/user.entity";

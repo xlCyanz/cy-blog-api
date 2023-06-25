@@ -5,7 +5,8 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import { FakeUtils } from "@utils";
 import { AppModule } from "@/app.module";
-import { IUpdateCategory, MessageCode } from "@interfaces";
+import { MessageCode } from "@/message-code";
+import { IUpdateCategory } from "@interfaces";
 
 import {
   CREATE_CATEGORY,

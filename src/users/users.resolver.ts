@@ -5,7 +5,8 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 
-import { MessageCode, Response } from "@interfaces";
+import { Response } from "@interfaces";
+import { MessageCode } from "@constants";
 
 import { UserEntity } from "./entities/user.entity";
 import { UsersService } from "./users.service";

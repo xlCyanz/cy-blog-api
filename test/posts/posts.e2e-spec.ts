@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 
 import { FakeUtils } from "@utils";
 import { AppModule } from "@/app.module";
-import { MessageCode } from "@interfaces";
+import { MessageCode } from "@/message-code";
 
 import { CREATE_USER } from "../users/users.graphql";
 import { CREATE_CATEGORY } from "../categories/categories.graphql";

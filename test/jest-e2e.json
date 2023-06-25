@@ -13,6 +13,7 @@
     "^@posts/(.*)$": "<rootDir>/../src/posts/$1",
     "^@utils$": "<rootDir>/../src/utils",
     "^@interfaces$": "<rootDir>/../src/interfaces",
-    "^@config/(.*)$": "<rootDir>/../src/config/$1"
+    "^@config/(.*)$": "<rootDir>/../src/config/$1",
+    "^@constants$": "<rootDir>/../src/constants"
   }
 }

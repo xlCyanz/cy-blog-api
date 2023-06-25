@@ -1,7 +1,7 @@
 import { InputType, Field } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
-import { MessageCode } from "@/interfaces";
+import { MessageCode } from "@constants";
 
 @InputType()
 export default class CreateUserInput {

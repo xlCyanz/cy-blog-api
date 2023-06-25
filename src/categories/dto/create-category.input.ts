@@ -1,6 +1,7 @@
-import { MessageCode } from "../../interfaces";
 import { InputType, Field } from "@nestjs/graphql";
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+
+import { MessageCode } from "@constants";
 
 @InputType()
 export class CreateCategoryInput {
