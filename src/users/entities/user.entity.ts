@@ -1,5 +1,6 @@
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
+import { Exclude } from "class-transformer";
 import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({ description: "User entity" })
@@ -13,7 +14,7 @@ export class UserEntity implements User {
   @Field(() => String, { description: "Last name" })
   lastName: string;
 
-  @Field(() => String, { description: "User password" })
+  @Exclude()
   password: string;
 
   @Field(() => String, { description: "User email" })

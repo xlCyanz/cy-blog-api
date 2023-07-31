@@ -1,4 +1,6 @@
 import * as R from "radash";
+import { Prisma } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import {
   HttpStatus,
   Injectable,
@@ -15,26 +17,40 @@ import { PostEntity } from "./entities/post.entity";
 export class PostsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(draft = false): Promise<PostEntity[]> {
-    return await this.prisma.post.findMany({ where: { published: !draft } });
+  async findAll(
+    args: Prisma.PostFindManyArgs<DefaultArgs>,
+  ): Promise<PostEntity[]> {
+    return await this.prisma.post.findMany(args);
   }
 
-  async findById(postId: number): Promise<PostEntity> {
-    return await this.prisma.post.findUnique({ where: { id: postId } });
+  async findUnique(
+    args: Prisma.PostFindUniqueArgs<DefaultArgs>,
+  ): Promise<PostEntity> {
+    return await this.prisma.post.findUnique(args);
   }
 
-  async findAllByTitle(postTitle: string): Promise<PostEntity[]> {
-    return await this.prisma.post.findMany({
-      where: {
-        title: { contains: postTitle },
-      },
-    });
+  async findMany(
+    args: Prisma.PostFindManyArgs<DefaultArgs>,
+  ): Promise<PostEntity[]> {
+    return await this.prisma.post.findMany(args);
+  }
+
+  async findFirst(
+    args: Prisma.PostFindFirstArgs<DefaultArgs>,
+  ): Promise<PostEntity> {
+    return await this.prisma.post.findFirst(args);
   }
 
   async create(newPost: PostEntity): Promise<PostEntity> {
     try {
       return await this.prisma.post.create({
-        data: R.omit(newPost, ["id", "author", "category"]),
+        data: {
+          title: newPost.title,
+          content: newPost.content,
+          image: newPost.image,
+          author: { connect: { id: newPost.authorId } },
+          category: { connect: { id: newPost.categoryId } },
+        },
       });
     } catch (error) {
       if (error.code === "P2002") {
@@ -43,6 +59,22 @@ export class PostsRepository {
           messageCode: MessageCode.POST_ALREADY_EXISTS,
         });
       }
+
+      if (error.code === "P2025") {
+        if (!newPost.authorId) {
+          throw new BadRequestException({
+            statusCode: HttpStatus.BAD_REQUEST,
+            messageCode: MessageCode.USER_ID_REQUIRED,
+          });
+        }
+        if (!newPost.categoryId) {
+          throw new BadRequestException({
+            statusCode: HttpStatus.BAD_REQUEST,
+            messageCode: MessageCode.CATEGORY_ID_REQUIRED,
+          });
+        }
+      }
+
       throw new BadRequestException(error);
     }
   }
@@ -64,7 +96,7 @@ export class PostsRepository {
     }
   }
 
-  async remove(postId: number): Promise<PostEntity> {
-    return await this.prisma.post.delete({ where: { id: postId } });
+  async remove(id: number): Promise<PostEntity> {
+    return await this.prisma.post.delete({ where: { id } });
   }
 }

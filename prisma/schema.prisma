@@ -22,25 +22,25 @@ model Category {
 model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
-  password  String
+  password  String    @default("")
   role      String
   avatar    String?
   firstName String
   lastName  String
-  posts     Post[]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  Post      Post[]
 }
 
 model Post {
   id         Int       @id @default(autoincrement())
   title      String
-  body       String
-  image      String?
+  content    String
+  image      String?   @default("")
   slug       String?
   published  Boolean   @default(false)
-  author     User?     @relation(fields: [authorId], references: [id])
-  authorId   Int?
+  author     User      @relation(fields: [authorId], references: [id])
+  authorId   Int
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId Int?
   createdAt  DateTime  @default(now())

@@ -13,15 +13,36 @@ export class PostsService {
   ) {}
 
   findAll(draft = false) {
-    return this.postsRepository.findAll(draft);
+    return this.postsRepository.findAll({ where: { published: draft } });
   }
 
   findById(postId: number) {
-    return this.postsRepository.findById(postId);
+    return this.postsRepository.findUnique({
+      where: { id: postId },
+      include: { author: true, category: true },
+    });
   }
 
   findAllByTitle(postTitle: string) {
-    return this.postsRepository.findAllByTitle(postTitle);
+    return this.postsRepository.findMany({
+      where: { title: { contains: postTitle }, published: true },
+    });
+  }
+
+  findAllByCategory(categoryId: number) {
+    return this.postsRepository.findMany({
+      where: { categoryId, published: true },
+    });
+  }
+
+  findAllByAuthor(authorId: number) {
+    return this.postsRepository.findMany({
+      where: { authorId, published: true },
+    });
+  }
+
+  findBySlug(slug: string) {
+    return this.postsRepository.findFirst({ where: { slug, published: true } });
   }
 
   create(createPostInput: CreatePostInput) {

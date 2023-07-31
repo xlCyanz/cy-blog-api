@@ -1,8 +1,8 @@
 /**
  * Fragments
  */
-const FRAGMENT_CATEGORY = `
-fragment Category on Category {
+export const FRAGMENT_CATEGORY = `
+fragment Category on CategoryEntity {
   id
   name
   description

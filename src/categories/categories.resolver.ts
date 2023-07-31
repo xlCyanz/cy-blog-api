@@ -1,7 +1,6 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import {
   HttpStatus,
-  HttpException,
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
@@ -23,7 +22,7 @@ export class CategoriesResolver {
   async findAll(): Promise<Response<CategoryEntity[]>> {
     const categories = await this.categoriesService.findAll();
 
-    if (categories.length === 0 || !categories) {
+    if (!categories.length) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
         messageCode: MessageCode.CATEGORIES_NOT_FOUND,
@@ -146,13 +145,10 @@ export class CategoriesResolver {
       const categoryRemoved = await this.categoriesService.remove(categoryId);
 
       if (!categoryRemoved) {
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.NOT_FOUND,
-            messageCode: MessageCode.CATEGORY_NOT_FOUND,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException({
+          statusCode: HttpStatus.NOT_FOUND,
+          messageCode: MessageCode.CATEGORY_NOT_FOUND,
+        });
       }
 
       return {

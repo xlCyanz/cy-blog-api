@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 
 import { MessageCode } from "@constants";
-import { PrismaService } from "@prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 
 import { CategoryEntity } from "./entities/category.entity";
 

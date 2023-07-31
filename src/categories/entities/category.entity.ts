@@ -3,7 +3,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({ description: "Category entity" })
 export class CategoryEntity implements Category {
-  @Field(() => String, { description: "Category identifier" })
+  @Field(() => Number, { description: "Category identifier" })
   id: number;
 
   @Field(() => String, { description: "Category name" })

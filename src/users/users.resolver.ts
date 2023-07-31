@@ -30,19 +30,13 @@ export class UsersResolver {
   async createUser(
     @Args("input") input: CreateUserInput,
   ): Promise<Response<UserEntity>> {
-    try {
-      const userCreated = await this.usersService.create(input);
+    const userCreated = await this.usersService.create(input);
 
-      return {
-        statusCode: HttpStatus.CREATED,
-        messageCode: MessageCode.USER_CREATED,
-        data: userCreated,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        ...error.response,
-      });
-    }
+    return {
+      statusCode: HttpStatus.CREATED,
+      messageCode: MessageCode.USER_CREATED,
+      data: userCreated,
+    };
   }
 
   @Mutation(() => ResponseUser)
@@ -56,19 +50,13 @@ export class UsersResolver {
       });
     }
 
-    try {
-      const userUpdated = await this.usersService.update(updateUserInput);
+    const userUpdated = await this.usersService.update(updateUserInput);
 
-      return {
-        statusCode: HttpStatus.OK,
-        messageCode: MessageCode.USER_UPDATED,
-        data: userUpdated,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        ...error.response,
-      });
-    }
+    return {
+      statusCode: HttpStatus.OK,
+      messageCode: MessageCode.USER_UPDATED,
+      data: userUpdated,
+    };
   }
 
   @Mutation(() => ResponseUser)

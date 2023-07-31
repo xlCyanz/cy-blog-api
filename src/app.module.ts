@@ -4,7 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
 import UsersModule from "@users/users.module";
 import PostsModule from "@posts/posts.module";
-import PrismaModule from "@prisma/prisma.module";
+import PrismaModule from "./prisma/prisma.module";
 import ConfigModule from "@config/config.module";
 import CategoriesModule from "@categories/categories.module";
 

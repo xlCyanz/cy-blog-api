@@ -3,7 +3,6 @@ import {
   HttpStatus,
   NotFoundException,
   BadRequestException,
-  NotImplementedException,
 } from "@nestjs/common";
 
 import { Response } from "@/interfaces";
@@ -11,9 +10,9 @@ import { MessageCode } from "@/constants";
 
 import { PostEntity } from "./entities/post.entity";
 import { PostsService } from "./posts.service";
-import { ResponsePost, ResponsePosts } from "./dto/response.post";
 import { CreatePostInput } from "./dto/create-post.input";
 import { UpdatePostInput } from "./dto/update-post.input";
+import { ResponsePost, ResponsePosts } from "./dto/response.post";
 
 @Resolver(() => PostEntity)
 export class PostsResolver {
@@ -21,9 +20,9 @@ export class PostsResolver {
 
   @Query(() => ResponsePosts, { name: "posts" })
   async findAll(): Promise<Response<PostEntity[]>> {
-    const posts = await this.postsService.findAll();
+    const posts = await this.postsService.findAll(true);
 
-    if (!posts.length || !posts) {
+    if (!posts.length) {
       return {
         statusCode: HttpStatus.NOT_FOUND,
         messageCode: MessageCode.POSTS_NOT_FOUND,
@@ -50,6 +49,33 @@ export class PostsResolver {
     }
 
     const posts = await this.postsService.findAllByTitle(postTitle);
+
+    if (!posts.length) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        messageCode: MessageCode.POSTS_NOT_FOUND,
+      });
+    }
+
+    return {
+      statusCode: HttpStatus.FOUND,
+      messageCode: MessageCode.POSTS_FOUND,
+      data: posts,
+    };
+  }
+
+  @Query(() => ResponsePosts, { name: "postsByCategory" })
+  async findAllByCategory(
+    @Args("categoryId", { type: () => Number }) categoryId: number,
+  ): Promise<Response<PostEntity[]>> {
+    if (!categoryId) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        messageCode: MessageCode.CATEGORY_ID_REQUIRED,
+      });
+    }
+
+    const posts = await this.postsService.findAllByCategory(categoryId);
 
     if (!posts.length) {
       throw new NotFoundException({
@@ -103,15 +129,19 @@ export class PostsResolver {
       });
     }
 
-    throw new NotImplementedException({
-      statusCode: HttpStatus.NOT_IMPLEMENTED,
-      messageCode: MessageCode.POST_SLUG_REQUIRED,
-    });
+    const post = await this.postsService.findBySlug(postSlug);
+
+    if (!post) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        messageCode: MessageCode.POST_NOT_FOUND,
+      });
+    }
 
     return {
       statusCode: HttpStatus.FOUND,
       messageCode: MessageCode.POST_FOUND,
-      data: null,
+      data: post,
     };
   }
 
@@ -119,12 +149,35 @@ export class PostsResolver {
   async createPost(
     @Args("input") input: CreatePostInput,
   ): Promise<Response<PostEntity>> {
-    const newCategory = await this.postsService.create(input);
+    const newPost = await this.postsService.create(input);
 
     return {
       statusCode: HttpStatus.CREATED,
       messageCode: MessageCode.POST_CREATED,
-      data: newCategory,
+      data: newPost,
+    };
+  }
+
+  @Mutation(() => ResponsePost)
+  async publishPost(
+    @Args("id") postId: number,
+  ): Promise<Response<Partial<PostEntity>>> {
+    if (!postId) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        messageCode: MessageCode.POST_ID_REQUIRED,
+      });
+    }
+
+    const publishedPost = await this.postsService.update({
+      id: postId,
+      published: true,
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      messageCode: MessageCode.POST_PUBLISHED,
+      data: publishedPost,
     };
   }
 
@@ -132,13 +185,6 @@ export class PostsResolver {
   async updatePost(
     @Args("input") input: UpdatePostInput,
   ): Promise<Response<PostEntity>> {
-    if (!input.id) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        messageCode: MessageCode.POST_ID_REQUIRED,
-      });
-    }
-
     try {
       const postUpdated = await this.postsService.update(input);
 

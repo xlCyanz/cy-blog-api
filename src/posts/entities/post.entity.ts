@@ -1,20 +1,21 @@
 import { Post } from "@prisma/client";
 import { ObjectType, Field } from "@nestjs/graphql";
 
+import { ICategory, IUser } from "@interfaces";
+
 import { UserEntity } from "@users/entities/user.entity";
 import { CategoryEntity } from "@categories/entities/category.entity";
-import { ICategory, IUser } from "@interfaces";
 
 @ObjectType({ description: "Post entity" })
 export class PostEntity implements Post {
-  @Field(() => String, { description: "Post identifier" })
+  @Field(() => Number, { description: "Post identifier" })
   id: number;
 
   @Field(() => String, { description: "Post title" })
   title: string;
 
   @Field(() => String, { description: "Post body" })
-  body: string;
+  content: string;
 
   @Field(() => String, { description: "Post image", nullable: true })
   image: string;
@@ -43,7 +44,15 @@ export class PostEntity implements Post {
   @Field(() => Date)
   updatedAt: Date;
 
-  constructor(init?: Partial<Post>) {
+  constructor({ author, category, ...init }: Partial<PostEntity>) {
     Object.assign(this, init);
+
+    if (author) {
+      this.author = new UserEntity(author);
+    }
+
+    if (category) {
+      this.category = new CategoryEntity(category);
+    }
   }
 }

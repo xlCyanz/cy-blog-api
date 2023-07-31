@@ -4,17 +4,16 @@
  *
  */
 export const FRAGMENT_USER = `
-  fragment User on User {
-    id
-    firstName
-    lastName
-    email
-    password
-    avatar
-    role
-    createdAt
-    updatedAt
-  }
+fragment User on UserEntity {
+  id
+  firstName
+  lastName
+  email
+  avatar
+  role
+  createdAt
+  updatedAt
+}
 `;
 
 export const FRAGMENT_RESPONSE_USER = `

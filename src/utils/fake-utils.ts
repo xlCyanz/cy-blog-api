@@ -6,8 +6,8 @@ export default class FakeUtils {
   public getUser(): Partial<IUser> {
     return {
       id: 0,
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       avatar: faker.image.avatar(),
       email: faker.internet.email(),
       password: faker.internet.password(),
@@ -34,8 +34,8 @@ export default class FakeUtils {
     return {
       id: null,
       title: faker.company.name(),
-      body: faker.lorem.paragraph(6),
-      image: faker.image.animals(),
+      content: faker.lorem.paragraph(6),
+      image: faker.image.url(),
     };
   }
 }
