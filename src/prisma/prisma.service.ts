@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 
 import { UserHashPasswordMiddleware } from "./middlewares/users.middleware";
-import { PostSlugifyTitleMiddleware } from "./middlewares/posts.middleware";
+// import { PostSlugifyTitleMiddleware } from "./middlewares/posts.middleware";
 
 @Injectable()
 export class PrismaService
@@ -23,7 +23,7 @@ export class PrismaService
     this.$on("query", (e) => this.logger.debug(`${e.query} ${e.params}`));
 
     this.$use(UserHashPasswordMiddleware());
-    this.$use(PostSlugifyTitleMiddleware());
+    // this.$use(PostSlugifyTitleMiddleware());
   }
 
   async onModuleInit(): Promise<void> {

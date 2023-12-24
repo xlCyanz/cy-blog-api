@@ -6,4 +6,4 @@ import { PdfController } from "./pdf.controller";
   providers: [PdfService],
   controllers: [PdfController],
 })
-export class PdfModule {}
+export default class PdfModule {}

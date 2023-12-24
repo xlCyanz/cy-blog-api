@@ -12,6 +12,14 @@ export class UsersService {
     private usersMapper: UsersMapper,
   ) {}
 
+  findById(userId: number) {
+    return this.usersRepository.findById(userId);
+  }
+
+  findByEmail(userEmail: string) {
+    return this.usersRepository.findByEmail(userEmail);
+  }
+
   create(createUserInput: CreateUserInput) {
     return this.usersRepository.create(
       this.usersMapper.dtoToEntity(createUserInput),

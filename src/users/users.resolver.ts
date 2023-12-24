@@ -3,14 +3,17 @@ import {
   HttpStatus,
   NotFoundException,
   BadRequestException,
+  UseGuards,
 } from "@nestjs/common";
 
 import { Response } from "@interfaces";
 import { MessageCode } from "@constants";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 
-import { UserEntity } from "./entities/user.entity";
+import { GetUser } from "./users.decorator";
 import { UsersService } from "./users.service";
 import { ResponseUser } from "./dto/response.user";
+import { UserEntity } from "./entities/user.entity";
 import CreateUserInput from "./dto/create-user.input";
 import { UpdateUserInput } from "./dto/update-user.input";
 
@@ -19,10 +22,29 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => ResponseUser, { name: "me" })
-  async me() {
+  @UseGuards(JwtAuthGuard)
+  async me(@GetUser() user: UserEntity) {
+    if (!user.id) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        messageCode: MessageCode.USER_ID_REQUIRED,
+      });
+    }
+
+    const userById = await this.usersService.findById(user.id);
+    console.log(userById);
+
+    if (!userById) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: MessageCode.USER_NOT_FOUND,
+      });
+    }
+
     return {
-      statusCode: HttpStatus.NOT_IMPLEMENTED,
-      messageCode: MessageCode.USER_NOT_IMPLEMENTED,
+      statusCode: HttpStatus.OK,
+      messageCode: MessageCode.USER_FOUND,
+      data: userById,
     };
   }
 

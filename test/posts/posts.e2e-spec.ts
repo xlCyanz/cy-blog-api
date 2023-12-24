@@ -90,7 +90,7 @@ describe("Posts (e2e)", () => {
         query: CREATE_USER,
         variables: {
           input: {
-            ...omit(author, ["id", "role"]),
+            ...omit(author, ["id"]),
           },
         },
       })

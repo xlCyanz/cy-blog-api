@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-import { ICategory, IPost, IUser } from "@interfaces";
+import { ICategory, IUser } from "@interfaces";
 
 export default class FakeUtils {
   public getUser(): Partial<IUser> {
@@ -8,17 +8,15 @@ export default class FakeUtils {
       id: 0,
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
-      avatar: faker.image.avatar(),
+      dni: "402-0000000-1",
       email: faker.internet.email(),
       password: faker.internet.password(),
-      role: "user",
     };
   }
 
   public getAdmin(): Partial<IUser> {
     return {
       ...this.getUser(),
-      role: "admin",
     };
   }
 
@@ -30,12 +28,12 @@ export default class FakeUtils {
     };
   }
 
-  public getPost(): Partial<IPost> {
-    return {
-      id: null,
-      title: faker.company.name(),
-      content: faker.lorem.paragraph(6),
-      image: faker.image.url(),
-    };
-  }
+  // public getPost(): Partial<IPost> {
+  //   return {
+  //     id: null,
+  //     title: faker.company.name(),
+  //     content: faker.lorem.paragraph(6),
+  //     image: faker.image.url(),
+  //   };
+  // }
 }

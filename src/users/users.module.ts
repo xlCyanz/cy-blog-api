@@ -9,6 +9,7 @@ import { UsersRepository } from "./users.repository";
 
 @Module({
   imports: [PrismaModule],
+  exports: [UsersService],
   providers: [UsersResolver, UsersService, UsersRepository, UsersMapper],
 })
 export default class UsersModule {}

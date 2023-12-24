@@ -20,11 +20,8 @@ export class UserEntity implements User {
   @Field(() => String, { description: "User email" })
   email: string;
 
-  @Field(() => String, { description: "User role" })
-  role: string;
-
-  @Field(() => String, { description: "User avatar" })
-  avatar: string;
+  @Field(() => String, { description: "User dni" })
+  dni: string;
 
   @Field(() => Date)
   createdAt: Date;

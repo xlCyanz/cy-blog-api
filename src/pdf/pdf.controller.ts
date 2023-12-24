@@ -8,7 +8,7 @@ export class PdfController {
   async index(@Response() res) {
     res
       .status(200)
-      .send("Bienvenido al sistema de generación de documentos. (PDF)");
+      .send("Bienido al sistema de generación de documentos. (PDF)");
   }
 
   @Get(":docId")

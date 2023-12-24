@@ -14,10 +14,21 @@ import { UserEntity } from "./entities/user.entity";
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
+  async findById(id: number): Promise<UserEntity> {
+    return await this.prisma.user.findUnique({
+      where: { id },
+      include: { RolesToUser: true },
+    });
+  }
+
+  async findByEmail(email: string): Promise<UserEntity> {
+    return await this.prisma.user.findUnique({ where: { email } });
+  }
+
   async create(newUser: UserEntity): Promise<UserEntity> {
     try {
       return await this.prisma.user.create({
-        data: { ...newUser, role: "user" },
+        data: { ...newUser },
       });
     } catch (error) {
       if (error.code === "P2002") {
@@ -41,7 +52,7 @@ export class UsersRepository {
     }
   }
 
-  async remove(userId: number): Promise<UserEntity> {
-    return await this.prisma.user.delete({ where: { id: userId } });
+  async remove(id: number): Promise<UserEntity> {
+    return await this.prisma.user.delete({ where: { id } });
   }
 }

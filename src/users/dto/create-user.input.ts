@@ -6,12 +6,12 @@ import { MessageCode } from "@constants";
 @InputType()
 export default class CreateUserInput {
   @IsString()
-  @IsNotEmpty({ message: MessageCode.USER_FIRSTNAME_REQUIRED })
+  @IsNotEmpty({ message: MessageCode.USER_FIRST_NAME_REQUIRED })
   @Field(() => String)
   firstName: string;
 
   @IsString()
-  @IsNotEmpty({ message: MessageCode.USER_LASTNAME_REQUIRED })
+  @IsNotEmpty({ message: MessageCode.USER_LAST_NAME_REQUIRED })
   @Field(() => String)
   lastName: string;
 
@@ -28,7 +28,7 @@ export default class CreateUserInput {
 
   @IsString()
   @Field(() => String, { nullable: true })
-  avatar?: string;
+  dni?: string;
 
   constructor(init?: Partial<CreateUserInput>) {
     Object.assign(this, init);
