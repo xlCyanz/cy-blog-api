@@ -9,6 +9,7 @@ import ConfigModule from "@config/config.module";
 import CategoriesModule from "@categories/categories.module";
 
 import { AppController } from "./app.controller";
+import { PdfModule } from './pdf/pdf.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AppController } from "./app.controller";
     CategoriesModule,
     UsersModule,
     PostsModule,
+    PdfModule,
   ],
   controllers: [AppController],
   providers: [],

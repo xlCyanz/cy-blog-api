@@ -4,9 +4,10 @@ import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@config/config.service";
 
 import { AppModule } from "./app.module";
+import { NestExpressApplication } from "@nestjs/platform-express";
 
 const bootstrap = async () => {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: false }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
