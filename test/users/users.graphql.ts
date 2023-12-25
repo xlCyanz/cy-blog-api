@@ -9,7 +9,6 @@ fragment User on UserEntity {
   firstName
   lastName
   email
-  avatar
   createdAt
   updatedAt
 }

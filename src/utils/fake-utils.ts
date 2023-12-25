@@ -14,12 +14,6 @@ export default class FakeUtils {
     };
   }
 
-  public getAdmin(): Partial<IUser> {
-    return {
-      ...this.getUser(),
-    };
-  }
-
   public getCategory(): Partial<ICategory> {
     return {
       id: null,

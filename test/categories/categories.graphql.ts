@@ -46,7 +46,7 @@ query GET_ALL_CATEGORIES {
 export const GET_CATEGORY_BY_ID = `
 ${FRAGMENT_RESPONSE_CATEGORY}
 query GET_CATEGORY_BY_ID($id: Float!) {
-  categoryById(id: $id) {
+  category(id: $id) {
     ...ResponseCategory
   }
 }

@@ -1,5 +1,5 @@
 import * as R from "radash";
-import * as request from "supertest";
+import request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
@@ -15,7 +15,7 @@ describe("Users (e2e)", () => {
   const path = "/graphql";
   const faker = new FakeUtils();
 
-  const user = R.omit(faker.getUser(), ["id", "role"]);
+  const user = R.omit(faker.getUser(), ["id", "roles"]);
 
   const updatedUser: IUpdateUser = {
     id: null,
@@ -37,9 +37,6 @@ describe("Users (e2e)", () => {
     expect(CREATE_USER.includes("typename")).toBe(false);
     expect(REMOVE_USER.includes("typename")).toBe(false);
     expect(UPDATE_USER.includes("typename")).toBe(false);
-
-    // expect(LOGIN_USER.includes("typename")).toBe(false);
-    // expect(LOGIN_REGISTER.includes("typename")).toBe(false);
   });
 
   it("Create a user", async () =>
@@ -66,9 +63,6 @@ describe("Users (e2e)", () => {
         expect(createUser.data.lastName).toBe(user.lastName);
         expect(createUser.data.password).not.toBe(user.password);
         expect(createUser.data.email).toBe(user.email);
-        expect(createUser.data.role).toBeDefined();
-        expect(createUser.data.role).toBe("user");
-        expect(createUser.data.avatar).toBe(user.avatar);
         expect(createUser.data.createdAt).toBeDefined();
 
         updatedUser.id = createUser.data.id;
@@ -117,7 +111,6 @@ describe("Users (e2e)", () => {
         expect(updateUser.data.updatedAt).toBeDefined();
         expect(updateUser.data.firstName).toBe(updatedUser.firstName);
         expect(updateUser.data.lastName).toBe(updatedUser.lastName);
-        expect(updateUser.data.avatar).toBe(updatedUser.avatar);
       });
   });
 

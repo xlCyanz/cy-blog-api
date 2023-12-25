@@ -32,7 +32,6 @@ export class UsersResolver {
     }
 
     const userById = await this.usersService.findById(user.id);
-    console.log(userById);
 
     if (!userById) {
       throw new NotFoundException({

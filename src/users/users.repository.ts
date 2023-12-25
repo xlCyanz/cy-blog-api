@@ -1,3 +1,4 @@
+import { omit } from "radash";
 import {
   HttpStatus,
   Injectable,
@@ -17,7 +18,7 @@ export class UsersRepository {
   async findById(id: number): Promise<UserEntity> {
     return await this.prisma.user.findUnique({
       where: { id },
-      include: { RolesToUser: true },
+      include: { roles: true },
     });
   }
 
@@ -28,7 +29,7 @@ export class UsersRepository {
   async create(newUser: UserEntity): Promise<UserEntity> {
     try {
       return await this.prisma.user.create({
-        data: { ...newUser },
+        data: omit(newUser, ["roles"]),
       });
     } catch (error) {
       if (error.code === "P2002") {
@@ -41,11 +42,11 @@ export class UsersRepository {
     }
   }
 
-  async update(updateUserInput: UserEntity): Promise<UserEntity> {
+  async update(updatedUser: UserEntity): Promise<UserEntity> {
     try {
       return await this.prisma.user.update({
-        data: updateUserInput,
-        where: { id: updateUserInput.id },
+        data: omit(updatedUser, ["roles"]),
+        where: { id: updatedUser.id },
       });
     } catch (error) {
       throw new BadRequestException(error);

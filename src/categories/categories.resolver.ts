@@ -36,7 +36,7 @@ export class CategoriesResolver {
     };
   }
 
-  @Query(() => ResponseCategory, { name: "categoryById" })
+  @Query(() => ResponseCategory, { name: "category" })
   async findById(
     @Args("id", { type: () => Number }) categoryId: number,
   ): Promise<Response<CategoryEntity>> {

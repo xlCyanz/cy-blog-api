@@ -10,6 +10,7 @@ import ConfigModule from "@config/config.module";
 import CategoriesModule from "@categories/categories.module";
 
 import { AppController } from "./app.controller";
+import RolesModule from "./roles/roles.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AppController } from "./app.controller";
     // PostsModule,
     PdfModule,
     AuthModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [],

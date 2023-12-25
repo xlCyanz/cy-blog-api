@@ -2,6 +2,7 @@ import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 import { Exclude } from "class-transformer";
 import { ObjectType, Field } from "@nestjs/graphql";
+import { RolesToUserEntity } from "@/roles/entities/role.entity";
 
 @ObjectType({ description: "User entity" })
 export class UserEntity implements User {
@@ -22,6 +23,9 @@ export class UserEntity implements User {
 
   @Field(() => String, { description: "User dni" })
   dni: string;
+
+  @Field(() => [RolesToUserEntity], { nullable: true })
+  roles?: RolesToUserEntity[];
 
   @Field(() => Date)
   createdAt: Date;

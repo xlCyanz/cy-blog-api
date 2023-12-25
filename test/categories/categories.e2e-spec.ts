@@ -1,5 +1,5 @@
 import * as R from "radash";
-import * as request from "supertest";
+import request from "supertest";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 
@@ -159,7 +159,7 @@ describe("Categories (e2e)", () => {
       })
       .expect(HttpStatus.OK)
       .then((res) => {
-        const { categoryById } = res.body.data;
+        const { category: categoryById } = res.body.data;
 
         expect(categoryById.statusCode).toBe(HttpStatus.FOUND);
         expect(categoryById.messageCode).toBe(MessageCode.CATEGORY_FOUND);
